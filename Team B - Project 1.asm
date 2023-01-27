@@ -1,5 +1,6 @@
 ;TEAM B - Oloroso, Barrios, Manansala
 #START=PRINTER.EXE#
+#START=THERMOMETER.EXE#
 org 100h
 
 ;CREATE DIRECTORY & FILE
@@ -16,7 +17,8 @@ MOV DX, OFFSET FILE
 INT 21H
 MOV HANDLE, AX
     
-INFILOOP:   
+INFILOOP:
+CALL CHECKTEMP   
 ;GET DAY
 MOV AH,2AH    
 INT 21H
@@ -28,10 +30,11 @@ MOV BX,AX
    MOV MONTH, 0
    MOV YEAR, 0
    MOV DX, 2000H
-   CALL DISPLAYDATE
+   CALL DISPLAYDATE 
    MOV BUFF, 2
    MOV DX, 2005H
    CALL DISPLAYDATE
+   CALL CHECKTEMP
    MOV DX, 200AH
    MOV SI, 0
    MOV CX, 5
@@ -41,8 +44,8 @@ MOV BX,AX
     INC SI
     INC DX
     LOOP NEXTDAY
-
-;GET MONTH
+CALL CHECKTEMP 
+;GET MONTH 
 MOV AH, 2AH
 INT 21H
 MOV AL, DH
@@ -57,6 +60,7 @@ MOV BX, AX
     MOV BUFF, 2
     MOV DX, 2014H
     CALL DISPLAYDATE
+    CALL CHECKTEMP
     MOV DX, 2019H
     MOV SI, 0
     MOV CX, 5
@@ -66,7 +70,7 @@ MOV BX, AX
     INC SI
     INC DX
     LOOP NEXTMONTH
-    
+CALL CHECKTEMP     
 ;GET YEAR
 MOV AH, 2AH
 INT 21H
@@ -83,7 +87,7 @@ MOV BX, AX
     MOV BUFF, 2
     MOV DX, 2023H
     CALL DISPLAYDATE
-    
+CALL CHECKTEMP     
 ;GET HOUR
 MOV AH, 2CH
 INT 21H
@@ -103,7 +107,7 @@ MOV BX, AX
 MOV DX, 2032H
 MOV AL, LINEn
 OUT DX, AL
-
+CALL CHECKTEMP 
 ;GET MINUTE
 MOV AH, 2CH
 INT 21H
@@ -122,7 +126,7 @@ MOV BX, AX
 MOV DX, 2035H
 MOV AL, LINEn
 OUT DX, AL
-
+CALL CHECKTEMP 
 ;GET SECONDS
 MOV AH, 2CH
 INT 21H
@@ -138,7 +142,7 @@ MOV BX, AX
     MOV BUFF, 2
     MOV DX, 2037H
     CALL DISPLAYTIME 
-
+CALL CHECKTEMP 
 CMP ISWATERED, 1
     JL INFILOOP
 CALL SAVELOGS
@@ -567,7 +571,7 @@ HERE:
         MOV YEAR2, '9'
         JMP DONE
             
-DONE:   
+DONE:     
 RET
 DISPLAYDATE ENDP
 
@@ -911,7 +915,8 @@ HERETIME:
         MOV SECOND2, '9'
         JMP DONETIME   
 
-DONETIME:
+DONETIME:  
+;CALL CHECKTEMP 
 RET
 DISPLAYTIME ENDP
 
@@ -1034,6 +1039,7 @@ ISEVENING:
     JMP SET              
 SET:
 RET
+CALL CHECKTEMP 
 CHECKTIME ENDP
 
 DISPLAYLED PROC
@@ -1127,11 +1133,13 @@ INTERVAL PROC
     MOV CX, 0FH
     MOV DX, 4240H
     MOV AH, 86H
-    INT 15H  
+    INT 15H
+    CALL CHECKTEMP   
 RET
 INTERVAL ENDP
 
-SAVELOGS PROC 
+SAVELOGS PROC
+    CALL CHECKTEMP  
     MOV AX, 0       
     MOV AL, [DAY1]
     OUT 130D, AL
@@ -1151,7 +1159,8 @@ SAVELOGS PROC
     WAITC:
         IN AL, 130D
         OR AL, 0
-        JNZ WAITC
+        JNZ WAITC 
+    CALL CHECKTEMP 
     MOV AX, 0
     MOV AL, [MONTH1]
     OUT 130D, AL
@@ -1173,6 +1182,7 @@ SAVELOGS PROC
         IN AL, 130D
         OR AL, 0
         JNZ WAITF 
+    CALL CHECKTEMP 
     MOV AX, 0
     MOV AL, [YEAR1]
     OUT 130D, AL
@@ -1187,6 +1197,7 @@ SAVELOGS PROC
         IN AL, 130D
         OR AL, 0
         JNZ WAITH
+    CALL CHECKTEMP 
     LEA BX, SSPACE
     MOV CX, 5
     MOV AX, 0
@@ -1200,7 +1211,7 @@ PUTCHARC:
         JNZ WAITI 
     LOOP PUTCHARC
     
-    
+    CALL CHECKTEMP 
     MOV AX, 0
     MOV AL, [HOUR1]
     OUT 130D, AL
@@ -1222,6 +1233,7 @@ PUTCHARC:
         IN AL, 130D
         OR AL, 0
         JNZ WAIT3 
+    CALL CHECKTEMP 
     MOV AX, 0
     MOV AL, [MINUTE1]
     OUT 130D, AL
@@ -1244,6 +1256,7 @@ PUTCHARC:
         IN AL, 130D
         OR AL, 0
         JNZ WAIT6
+    CALL CHECKTEMP 
     MOV AX, 0
     MOV AL, [SECOND1]
     OUT 130D, AL
@@ -1272,7 +1285,7 @@ PUTCHARD:
         JNZ WAITJ 
     LOOP PUTCHARD 
     
-      
+    CALL CHECKTEMP   
     LEA BX, SSTATUS
     MOV CX, 10
     MOV AX, 0
@@ -1285,7 +1298,7 @@ PUTCHARE:
         OR AL, 0
         JNZ WAITK 
     LOOP PUTCHARE
-     
+CALL CHECKTEMP      
 CALL WRITETOFILE   
 RET
 SAVELOGS ENDP
@@ -1405,25 +1418,66 @@ WRITETOFILE PROC
     MOV CX, 10   
     INT 21H
     
-    ;MOV AH, 3EH
-    ;MOV BX, HANDLE
-    ;INT 21H
+CALL CHECKTEMP 
 RET
 WRITETOFILE ENDP    
-
+ 
+CHECKTEMP PROC
+    IN AL, 125
+    CMP AL, 21
+        JL CHANGE1
+    CMP AL, 32
+        JLE START   
+    JG CHANGE2
+        
+CHANGE1:
+    MOV AL, 1
+    OUT 127, AL
+    JMP START
+CHANGE2:
+    MOV AL, 0
+    OUT 127, AL 
+    IN AL, 125
+    CMP AL, 36H
+        JGE ISHIGH
+    JMP START     
+ISHIGH:
+    MOV DX, 2040H
+    MOV SI, 0
+    MOV CX, 48
+    NEXTH:
+        MOV AL, MESSAGEh[SI]
+        OUT DX, AL 
+        INC SI
+        INC DX
+                LOOP NEXTH
+    MOV DX, 2040H
+    MOV SI, 0
+    MOV CX, 48
+    NEXTH2:
+        MOV AL, MESSAGEs[SI]
+        OUT DX, AL 
+        INC SI
+        INC DX
+        LOOP NEXTH2        
+START:
+RET
+CHECKTEMP ENDP
 
   
 
                                                
-
+               
             ;|              ||              ||              |
 MESSAGE1 DB "******GOOD***********MORNING********************"
 MESSAGE2 DB "******GOOD**********AFTERNOON*******************"
 MESSAGE3 DB "******GOOD***********EVENING********************"
 MESSAGEn DB "********************WATERING******PLEASE WAIT***"
+MESSAGEh DB "****TOO HOT!********WATERING******PLEASE WAIT***"
+MESSAGEs DB "************************************************"
 BUFF DB ?,"$"
 REPEAT DB ?,"$"
-ISWATERED DB ?,"$"  
+ISWATERED DB ?,"$"   
 
  
 ;0-9 DIGITS DOT MATRIX  
