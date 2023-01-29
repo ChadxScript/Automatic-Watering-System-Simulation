@@ -1,4 +1,5 @@
 ;TEAM B - Oloroso, Barrios, Manansala
+;START:
 #START=PRINTER.EXE#
 #START=THERMOMETER.EXE#
 org 100h
@@ -146,6 +147,7 @@ CALL CHECKTEMP
 CMP ISWATERED, 1
     JL INFILOOP
 CALL SAVELOGS
+MOV ISWATERED, 0
 JMP INFILOOP
 MOV AH, 4CH
 INT 21H 
@@ -943,7 +945,19 @@ CHECKTIME PROC
         JMP SET
 ISMORNING:
     CMP REPEAT, 0
-        JE SET
+        JE SET    
+    MOV DX, 2032H
+    MOV SI, 0
+    MOV CX, 6
+    RESETTIME1:
+        MOV AL, LINEn
+        OUT DX, AL
+        INC DX
+        INC SI
+        LOOP RESETTIME1
+    MOV DX, 2040H
+    MOV SI, 0
+    MOV CX, 48
     NEXTLCDA1:
         MOV AL, MESSAGEn[SI]
         OUT DX, AL
@@ -979,9 +993,21 @@ IFAFTERNOON:
         MOV REPEAT, 1
         MOV ISWATERED, 0
         JMP SET
-ISAFTERNOON:
+ISAFTERNOON:  
     CMP REPEAT, 0
         JE SET
+    MOV DX, 2032H
+    MOV SI, 0
+    MOV CX, 6
+    RESETTIME2:
+        MOV AL, LINEn
+        OUT DX, AL
+        INC DX
+        INC SI
+        LOOP RESETTIME2
+    MOV DX, 2040H
+    MOV SI, 0
+    MOV CX, 48
     NEXTLCDB1:
         MOV AL, MESSAGEn[SI]
         OUT DX, AL
@@ -1015,9 +1041,21 @@ IFEVENING:
         MOV REPEAT, 1
         MOV ISWATERED, 0
         JMP SET    
-ISEVENING:
+ISEVENING: 
     CMP REPEAT, 0
         JE SET
+    MOV DX, 2032H
+    MOV SI, 0
+    MOV CX, 6
+    RESETTIME3:
+        MOV AL, LINEn
+        OUT DX, AL
+        INC DX
+        INC SI
+        LOOP RESETTIME3
+    MOV DX, 2040H
+    MOV SI, 0
+    MOV CX, 48
     NEXTLCDC1:
         MOV AL, MESSAGEn[SI]
         OUT DX, AL
@@ -1124,7 +1162,30 @@ DISPLAYLED PROC
     MOV DX, 2070H
     MOV AL, 00111100B
     OUT DX, AL
+    CALL INTERVAL 
+    MOV DX, 2070H
+    MOV AL, 00000000B
+    OUT DX, AL
+    CMP ISTOOHOT, 1
+        JE ISHOT
+    JMP DONELED
+ISHOT: 
+    MOV AL, 10000000B
+    OUT DX, AL
     CALL INTERVAL
+    MOV AL, 10100000B
+    OUT DX, AL
+    CALL INTERVAL
+    MOV AL, 10101000B
+    OUT DX, AL
+    CALL INTERVAL
+    MOV AL, 10101010B
+    OUT DX, AL
+    CALL INTERVAL
+    MOV AL, 00000000B
+    OUT DX, AL
+    CALL INTERVAL    
+DONELED: 
 RET
 DISPLAYLED ENDP
 
@@ -1427,20 +1488,20 @@ CHECKTEMP PROC
     CMP AL, 21
         JL CHANGE1
     CMP AL, 32
-        JLE START   
+        JLE START2   
     JG CHANGE2
         
 CHANGE1:
     MOV AL, 1
     OUT 127, AL
-    JMP START
+    JMP START2
 CHANGE2:
     MOV AL, 0
     OUT 127, AL 
     IN AL, 125
     CMP AL, 36H
         JGE ISHIGH
-    JMP START     
+    JMP START2     
 ISHIGH:
     MOV DX, 2040H
     MOV SI, 0
@@ -1450,17 +1511,20 @@ ISHIGH:
         OUT DX, AL 
         INC SI
         INC DX
-                LOOP NEXTH
+        LOOP NEXTH
     MOV DX, 2040H
     MOV SI, 0
-    MOV CX, 48
+    MOV CX, 48 
+    MOV ISTOOHOT, 1
+    CALL DISPLAYLED
     NEXTH2:
         MOV AL, MESSAGEs[SI]
         OUT DX, AL 
         INC SI
         INC DX
-        LOOP NEXTH2        
-START:
+        LOOP NEXTH2 
+    MOV ISTOOHOT, 0       
+START2:
 RET
 CHECKTEMP ENDP
 
@@ -1477,7 +1541,8 @@ MESSAGEh DB "****TOO HOT!********WATERING******PLEASE WAIT***"
 MESSAGEs DB "************************************************"
 BUFF DB ?,"$"
 REPEAT DB ?,"$"
-ISWATERED DB ?,"$"   
+ISWATERED DB ?,"$"
+ISTOOHOT DB ?,"$"   
 
  
 ;0-9 DIGITS DOT MATRIX  
@@ -1548,4 +1613,7 @@ SSTATUS_END DB 0
 
 DIR DB "c:\WATERING SYSTEM", 0
 FILE DB "c:\WATERING SYSTEM\LOGS.txt", 0
-HANDLE DW ?
+HANDLE DW ?  
+
+;END
+;ENDP START
