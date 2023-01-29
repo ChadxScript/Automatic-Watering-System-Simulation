@@ -1,5 +1,4 @@
 ;TEAM B - Oloroso, Barrios, Manansala
-;START:
 #START=PRINTER.EXE#
 #START=THERMOMETER.EXE#
 org 100h
@@ -917,8 +916,7 @@ HERETIME:
         MOV SECOND2, '9'
         JMP DONETIME   
 
-DONETIME:  
-;CALL CHECKTEMP 
+DONETIME:   
 RET
 DISPLAYTIME ENDP
 
@@ -946,15 +944,7 @@ CHECKTIME PROC
 ISMORNING:
     CMP REPEAT, 0
         JE SET    
-    MOV DX, 2032H
-    MOV SI, 0
-    MOV CX, 6
-    RESETTIME1:
-        MOV AL, LINEn
-        OUT DX, AL
-        INC DX
-        INC SI
-        LOOP RESETTIME1
+    CALL SETTIME
     MOV DX, 2040H
     MOV SI, 0
     MOV CX, 48
@@ -996,15 +986,7 @@ IFAFTERNOON:
 ISAFTERNOON:  
     CMP REPEAT, 0
         JE SET
-    MOV DX, 2032H
-    MOV SI, 0
-    MOV CX, 6
-    RESETTIME2:
-        MOV AL, LINEn
-        OUT DX, AL
-        INC DX
-        INC SI
-        LOOP RESETTIME2
+    CALL SETTIME
     MOV DX, 2040H
     MOV SI, 0
     MOV CX, 48
@@ -1044,15 +1026,7 @@ IFEVENING:
 ISEVENING: 
     CMP REPEAT, 0
         JE SET
-    MOV DX, 2032H
-    MOV SI, 0
-    MOV CX, 6
-    RESETTIME3:
-        MOV AL, LINEn
-        OUT DX, AL
-        INC DX
-        INC SI
-        LOOP RESETTIME3
+    CALL SETTIME
     MOV DX, 2040H
     MOV SI, 0
     MOV CX, 48
@@ -1079,7 +1053,38 @@ SET:
 RET
 CALL CHECKTEMP 
 CHECKTIME ENDP
-
+ 
+SETTIME PROC 
+    MOV DX, 2032H
+    MOV AL, LINEn
+    OUT DX, AL
+    
+    MOV DX, 2033H
+    MOV SI, 0
+    MOV CX, 2
+    RESETTIME1:
+        MOV AL, LINE0
+        OUT DX, AL
+        INC DX
+        INC SI
+        LOOP RESETTIME1
+    
+    MOV DX, 2032H
+    MOV AL, LINEn
+    OUT DX, AL
+    
+    MOV DX, 2036H
+    MOV SI, 0
+    MOV CX, 2
+    RESETTIME2:
+        MOV AL, LINE0
+        OUT DX, AL
+        INC DX
+        INC SI
+        LOOP RESETTIME2
+RET
+SETTIME ENDP 
+ 
 DISPLAYLED PROC
     MOV DX, 2070H
     MOV AL, 00000000B 
@@ -1527,9 +1532,6 @@ ISHIGH:
 START2:
 RET
 CHECKTEMP ENDP
-
-  
-
                                                
                
             ;|              ||              ||              |
@@ -1614,6 +1616,3 @@ SSTATUS_END DB 0
 DIR DB "c:\WATERING SYSTEM", 0
 FILE DB "c:\WATERING SYSTEM\LOGS.txt", 0
 HANDLE DW ?  
-
-;END
-;ENDP START
