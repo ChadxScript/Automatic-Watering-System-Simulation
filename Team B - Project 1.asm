@@ -1508,6 +1508,15 @@ CHANGE2:
         JGE ISHIGH
     JMP START2     
 ISHIGH:
+    MOV AH, 2CH
+    INT 21H
+    MOV AL, CH
+    AAM
+    MOV BX, AX 
+    CMP BX, 0101H
+        JL START2
+    CMP BX, 0107H
+        JG START2
     MOV DX, 2040H
     MOV SI, 0
     MOV CX, 48
