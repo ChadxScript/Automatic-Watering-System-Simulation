@@ -930,20 +930,20 @@ CHECKTIME PROC
         JG IFAFTERNOON    
     CMP BX, 0101H
         JE ISMORNING 
-    CMP REPEAT, 1
-        JE SET
+;    CMP REPEAT, 1
+;        JE SET
     NEXTLCDA2:
         MOV AL, MESSAGE1[SI]
         OUT DX, AL
         INC SI
         INC DX
         LOOP NEXTLCDA2
-        MOV REPEAT, 1
+;        MOV REPEAT, 1
         MOV ISWATERED, 0
         JMP SET
 ISMORNING:
     CMP REPEAT, 0
-        JE SET    
+        JG NEXTLCDA2 ;SET    
     CALL SETTIME
     MOV DX, 2040H
     MOV SI, 0
@@ -965,27 +965,27 @@ ISMORNING:
         INC DX
         LOOP NEXTLCDA3
         MOV ISWATERED, 1
-    MOV REPEAT, 0    
+    MOV REPEAT, 1    
     JMP SET
 IFAFTERNOON:
     CMP BX, 0107H
         JG IFEVENING
     CMP BX,0107H
         JE ISAFTERNOON
-    CMP REPEAT, 1
-        JE SET
+;    CMP REPEAT, 1
+;        JE SET
     NEXTLCDB2:
         MOV AL, MESSAGE2[SI]
         OUT DX, AL
         INC SI
         INC DX
         LOOP NEXTLCDB2
-        MOV REPEAT, 1
+;        MOV REPEAT, 1
         MOV ISWATERED, 0
         JMP SET
 ISAFTERNOON:  
     CMP REPEAT, 0
-        JE SET
+        JG NEXTLCDB2 ;SET
     CALL SETTIME
     MOV DX, 2040H
     MOV SI, 0
@@ -1012,20 +1012,20 @@ ISAFTERNOON:
 IFEVENING:
     CMP BX, 0203H
         JE ISEVENING 
-    CMP REPEAT, 1
-        JE SET
+;    CMP REPEAT, 1
+;        JE SET
     NEXTLCDC2:
         MOV AL, MESSAGE3[SI]
         OUT DX, AL
         INC SI
         INC DX 
         LOOP NEXTLCDC2
-        MOV REPEAT, 1
+;        MOV REPEAT, 1
         MOV ISWATERED, 0
         JMP SET    
 ISEVENING: 
     CMP REPEAT, 0
-        JE SET
+        JG NEXTLCDC2 ;SET
     CALL SETTIME
     MOV DX, 2040H
     MOV SI, 0
@@ -1050,8 +1050,7 @@ ISEVENING:
     MOV REPEAT, 0    
     JMP SET              
 SET:
-RET
-CALL CHECKTEMP 
+RET 
 CHECKTIME ENDP
  
 SETTIME PROC 
