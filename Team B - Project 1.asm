@@ -930,20 +930,20 @@ CHECKTIME PROC
         JG IFAFTERNOON    
     CMP BX, 0101H
         JE ISMORNING 
-;    CMP REPEAT, 1
-;        JE SET
+    CMP REPEAT, 1
+        JE SET
     NEXTLCDA2:
         MOV AL, MESSAGE1[SI]
         OUT DX, AL
         INC SI
         INC DX
         LOOP NEXTLCDA2
-;        MOV REPEAT, 1
+        MOV REPEAT, 1
         MOV ISWATERED, 0
         JMP SET
 ISMORNING:
     CMP REPEAT, 0
-        JG NEXTLCDA2 ;SET    
+        JE SET    
     CALL SETTIME
     MOV DX, 2040H
     MOV SI, 0
@@ -965,27 +965,27 @@ ISMORNING:
         INC DX
         LOOP NEXTLCDA3
         MOV ISWATERED, 1
-    MOV REPEAT, 1    
+    MOV REPEAT, 0    
     JMP SET
 IFAFTERNOON:
     CMP BX, 0107H
         JG IFEVENING
     CMP BX,0107H
         JE ISAFTERNOON
-;    CMP REPEAT, 1
-;        JE SET
+    CMP REPEAT, 1
+        JE SET
     NEXTLCDB2:
         MOV AL, MESSAGE2[SI]
         OUT DX, AL
         INC SI
         INC DX
         LOOP NEXTLCDB2
-;        MOV REPEAT, 1
+        MOV REPEAT, 1
         MOV ISWATERED, 0
         JMP SET
 ISAFTERNOON:  
     CMP REPEAT, 0
-        JG NEXTLCDB2 ;SET
+        JE SET
     CALL SETTIME
     MOV DX, 2040H
     MOV SI, 0
@@ -1012,20 +1012,20 @@ ISAFTERNOON:
 IFEVENING:
     CMP BX, 0203H
         JE ISEVENING 
-;    CMP REPEAT, 1
-;        JE SET
+    CMP REPEAT, 1
+        JE SET
     NEXTLCDC2:
         MOV AL, MESSAGE3[SI]
         OUT DX, AL
         INC SI
         INC DX 
         LOOP NEXTLCDC2
-;        MOV REPEAT, 1
+        MOV REPEAT, 1
         MOV ISWATERED, 0
         JMP SET    
 ISEVENING: 
     CMP REPEAT, 0
-        JG NEXTLCDC2 ;SET
+        JE SET
     CALL SETTIME
     MOV DX, 2040H
     MOV SI, 0
@@ -1050,7 +1050,7 @@ ISEVENING:
     MOV REPEAT, 0    
     JMP SET              
 SET:
-RET 
+RET
 CHECKTIME ENDP
  
 SETTIME PROC 
@@ -1092,7 +1092,7 @@ DISPLAYLED PROC
     OUT DX, AL
     CALL INTERVAL
     MOV DX, 2070H
-    MOV AX, 11000000B
+    MOV AX, 11000000B                        
     OUT DX, AL
     CALL INTERVAL 
     MOV DX, 2070H
@@ -1483,7 +1483,7 @@ CHANGE2:
     MOV AL, 0
     OUT 127, AL 
     IN AL, 125
-    CMP AL, 36
+    CMP AL, 40
         JGE ISHIGH
     JMP START2     
 ISHIGH:
@@ -1518,16 +1518,16 @@ ISHIGH:
         MOV AH, 86H
         INT 15H
         IN AL, 125 
-        CMP AL, 36
+        CMP AL, 40
             JGE STILLHIGH
-        MOV DX, 2070H
-        MOV AL, 00000000B
-        OUT DX, AL     
+    MOV DX, 2070H
+    MOV AL, 00000000B
+    OUT DX, AL      
     MOV DX, 2040H
     MOV SI, 0
     MOV CX, 48 
     NEXTH2:
-        MOV AL, MESSAGEs[SI]
+        MOV AL, MESSAGE2[SI]
         OUT DX, AL 
         INC SI
         INC DX
@@ -1543,7 +1543,7 @@ MESSAGE2 DB "******GOOD**********AFTERNOON*******************"
 MESSAGE3 DB "******GOOD***********EVENING********************"
 MESSAGEn DB "********************WATERING******PLEASE WAIT***"
 MESSAGEh DB "****TOO HOT!********WATERING******PLEASE WAIT***"
-MESSAGEs DB "************************************************"
+;MESSAGEs DB "************************************************"
 BUFF DB ?,"$"
 REPEAT DB ?,"$"
 ISWATERED DB ?,"$"  
