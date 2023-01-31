@@ -1147,7 +1147,7 @@ DISPLAYLED PROC
     MOV DX, 2070H
     MOV AL, 00000001B
     OUT DX, AL
-    CALL INTERVAL
+    CALL INTERVAL 
     MOV DX, 2070H
     MOV AL, 00000000B
     OUT DX, AL
@@ -1167,30 +1167,10 @@ DISPLAYLED PROC
     MOV DX, 2070H
     MOV AL, 00111100B
     OUT DX, AL
-    CALL INTERVAL 
+    CALL INTERVAL  
     MOV DX, 2070H
     MOV AL, 00000000B
-    OUT DX, AL
-    CMP ISTOOHOT, 1
-        JE ISHOT
-    JMP DONELED
-ISHOT: 
-    MOV AL, 10000000B
-    OUT DX, AL
-    CALL INTERVAL
-    MOV AL, 10100000B
-    OUT DX, AL
-    CALL INTERVAL
-    MOV AL, 10101000B
-    OUT DX, AL
-    CALL INTERVAL
-    MOV AL, 10101010B
-    OUT DX, AL
-    CALL INTERVAL
-    MOV AL, 00000000B
-    OUT DX, AL
-    CALL INTERVAL    
-DONELED: 
+    OUT DX, AL 
 RET
 DISPLAYLED ENDP
 
@@ -1504,7 +1484,7 @@ CHANGE2:
     MOV AL, 0
     OUT 127, AL 
     IN AL, 125
-    CMP AL, 36H
+    CMP AL, 36
         JGE ISHIGH
     JMP START2     
 ISHIGH:
@@ -1525,19 +1505,34 @@ ISHIGH:
         OUT DX, AL 
         INC SI
         INC DX
-        LOOP NEXTH
+        LOOP NEXTH 
+    STILLHIGH:
+        MOV DX, 2070H
+        MOV AL, 00000000B
+        OUT DX, AL  
+        MOV DX, 2070H
+        MOV AL, 11111111B
+        OUT DX, AL
+        ;1 SEC0ND INTERVAL
+        MOV CX, 0FH
+        MOV DX, 4240H
+        MOV AH, 86H
+        INT 15H
+        IN AL, 125 
+        CMP AL, 36
+            JGE STILLHIGH
+        MOV DX, 2070H
+        MOV AL, 00000000B
+        OUT DX, AL     
     MOV DX, 2040H
     MOV SI, 0
     MOV CX, 48 
-    MOV ISTOOHOT, 1
-    CALL DISPLAYLED
     NEXTH2:
         MOV AL, MESSAGEs[SI]
         OUT DX, AL 
         INC SI
         INC DX
-        LOOP NEXTH2 
-    MOV ISTOOHOT, 0       
+        LOOP NEXTH2      
 START2:
 RET
 CHECKTEMP ENDP
@@ -1552,8 +1547,7 @@ MESSAGEh DB "****TOO HOT!********WATERING******PLEASE WAIT***"
 MESSAGEs DB "************************************************"
 BUFF DB ?,"$"
 REPEAT DB ?,"$"
-ISWATERED DB ?,"$"
-ISTOOHOT DB ?,"$"   
+ISWATERED DB ?,"$"  
 
  
 ;0-9 DIGITS DOT MATRIX  
