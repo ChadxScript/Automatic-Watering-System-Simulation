@@ -1,0 +1,1696 @@
+EMU8086 GENERATED LISTING. MACHINE CODE <- SOURCE.
+ 
+Team B - Project 1.exe_ -- emu8086 assembler version: 4.08  
+ 
+[ 04/02/2023  --  9:10:23 am ] 
+ 
+===================================================================================================
+[LINE]     LOC: MACHINE CODE                          SOURCE
+===================================================================================================
+ 
+[   1]        :                                       ;TEAM B - Oloroso, Barrios, Manansala
+[   2]        :                                       #MAKE_EXE#
+[   3]        :                                       #START=PRINTER.EXE#
+[   4]        :                                       #START=THERMOMETER.EXE#
+[   5]        :                                       org 100h
+[   6]        :                                       
+[   7]        :                                       ;CREATE DIRECTORY & FILE
+[   8]    0100: 8C C8                                 MOV AX, CS
+[   9]    0102: 8B D0                                 MOV DX, AX
+[  10]    0104: 8E C0                                 MOV ES, AX
+[  11]    0106: BA D1 10                              MOV DX, OFFSET DIR
+[  12]    0109: B4 39                                 MOV AH, 39H
+[  13]    010B: CD 21                                 INT 21H
+[  14]        :                                       
+[  15]    010D: B4 3C                                 MOV AH, 3CH
+[  16]    010F: B9 00 00                              MOV CX, 0
+[  17]    0112: BA E4 10                              MOV DX, OFFSET FILE
+[  18]    0115: CD 21                                 INT 21H
+[  19]    0117: A3 00 11                              MOV HANDLE, AX
+[  20]        :                                       
+[  21]    011A:                                       INFILOOP:
+[  22]    011A: E8 CE 0D                              CALL CHECKTEMP
+[  23]        :                                       ;GET DAY
+[  24]    011D: B4 2A                                 MOV AH,2AH
+[  25]    011F: CD 21                                 INT 21H
+[  26]    0121: 8A C2                                 MOV AL,DL
+[  27]    0123: D4 0A                                 AAM
+[  28]    0125: 8B D8                                 MOV BX,AX
+[  29]    0127: C6 06 56 10 01                        MOV BUFF, 1
+[  30]    012C: C6 06 9E 10 01                        MOV DAY, 1
+[  31]    0131: C6 06 A3 10 00                        MOV MONTH, 0
+[  32]    0136: C6 06 A8 10 00                        MOV YEAR, 0
+[  33]    013B: BA 00 20                              MOV DX, 2000H
+[  34]    013E: E8 60 01                              CALL DISPLAYDATE
+[  35]    0141: C6 06 56 10 02                        MOV BUFF, 2
+[  36]    0146: BA 05 20                              MOV DX, 2005H
+[  37]    0149: E8 55 01                              CALL DISPLAYDATE
+[  38]    014C: E8 9C 0D                              CALL CHECKTEMP
+[  39]    014F: BA 0A 20                              MOV DX, 200AH
+[  40]    0152: BE 00 00                              MOV SI, 0
+[  41]    0155: B9 05 00                              MOV CX, 5
+[  42]    0158:                                       NEXTDAY:
+[  43]    0158: 8A 84 8E 10                           MOV AL, DOTSn[SI]
+[  44]    015C: EE                                    OUT DX, AL
+[  45]    015D: 46                                    INC SI
+[  46]    015E: 42                                    INC DX
+[  47]    015F: E2 F7                                 LOOP NEXTDAY
+[  48]    0161: E8 87 0D                              CALL CHECKTEMP
+[  49]        :                                       ;GET MONTH
+[  50]    0164: B4 2A                                 MOV AH, 2AH
+[  51]    0166: CD 21                                 INT 21H
+[  52]    0168: 8A C6                                 MOV AL, DH
+[  53]    016A: D4 0A                                 AAM
+[  54]    016C: 8B D8                                 MOV BX, AX
+[  55]    016E: C6 06 56 10 01                        MOV BUFF, 1
+[  56]    0173: BA 0F 20                              MOV DX, 200FH
+[  57]    0176: C6 06 9E 10 00                        MOV DAY, 0
+[  58]    017B: C6 06 A3 10 01                        MOV MONTH, 1
+[  59]    0180: C6 06 A8 10 00                        MOV YEAR, 0
+[  60]    0185: E8 19 01                              CALL DISPLAYDATE
+[  61]    0188: C6 06 56 10 02                        MOV BUFF, 2
+[  62]    018D: BA 14 20                              MOV DX, 2014H
+[  63]    0190: E8 0E 01                              CALL DISPLAYDATE
+[  64]    0193: E8 55 0D                              CALL CHECKTEMP
+[  65]    0196: BA 19 20                              MOV DX, 2019H
+[  66]    0199: BE 00 00                              MOV SI, 0
+[  67]    019C: B9 05 00                              MOV CX, 5
+[  68]    019F:                                       NEXTMONTH:
+[  69]    019F: 8A 84 8E 10                           MOV AL, DOTSn[SI]
+[  70]    01A3: EE                                    OUT DX, AL
+[  71]    01A4: 46                                    INC SI
+[  72]    01A5: 42                                    INC DX
+[  73]    01A6: E2 F7                                 LOOP NEXTMONTH
+[  74]    01A8: E8 40 0D                              CALL CHECKTEMP
+[  75]        :                                       ;GET YEAR
+[  76]    01AB: B4 2A                                 MOV AH, 2AH
+[  77]    01AD: CD 21                                 INT 21H
+[  78]    01AF: 81 C1 30 F8                           ADD CX, 0F830H
+[  79]    01B3: 8B C1                                 MOV AX, CX
+[  80]    01B5: D4 0A                                 AAM
+[  81]    01B7: 8B D8                                 MOV BX, AX
+[  82]    01B9: C6 06 56 10 01                        MOV BUFF, 1
+[  83]    01BE: C6 06 9E 10 00                        MOV DAY, 0
+[  84]    01C3: C6 06 A3 10 00                        MOV MONTH, 0
+[  85]    01C8: C6 06 A8 10 01                        MOV YEAR, 1
+[  86]    01CD: BA 1E 20                              MOV DX, 201EH
+[  87]    01D0: E8 CE 00                              CALL DISPLAYDATE
+[  88]    01D3: C6 06 56 10 02                        MOV BUFF, 2
+[  89]    01D8: BA 23 20                              MOV DX, 2023H
+[  90]    01DB: E8 C3 00                              CALL DISPLAYDATE
+[  91]    01DE: E8 0A 0D                              CALL CHECKTEMP
+[  92]        :                                       ;GET HOUR
+[  93]    01E1: B4 2C                                 MOV AH, 2CH
+[  94]    01E3: CD 21                                 INT 21H
+[  95]    01E5: 8A C5                                 MOV AL, CH
+[  96]    01E7: D4 0A                                 AAM
+[  97]    01E9: 8B D8                                 MOV BX, AX
+[  98]    01EB: C6 06 56 10 01                        MOV BUFF, 1
+[  99]    01F0: C6 06 B5 10 01                        MOV HOUR, 1
+[ 100]    01F5: C6 06 BA 10 00                        MOV MINUTE, 0
+[ 101]    01FA: C6 06 BF 10 00                        MOV SECOND, 0
+[ 102]    01FF: BA 30 20                              MOV DX, 2030H
+[ 103]    0202: E8 AA 04                              CALL DISPLAYTIME
+[ 104]    0205: C6 06 56 10 02                        MOV BUFF, 2
+[ 105]    020A: BA 31 20                              MOV DX, 2031H
+[ 106]    020D: E8 9F 04                              CALL DISPLAYTIME
+[ 107]    0210: E8 3F 08                              CALL CHECKTIME
+[ 108]    0213: BA 32 20                              MOV DX, 2032H
+[ 109]    0216: A0 9D 10                              MOV AL, LINEn
+[ 110]    0219: EE                                    OUT DX, AL
+[ 111]    021A: E8 CE 0C                              CALL CHECKTEMP
+[ 112]        :                                       ;GET MINUTE
+[ 113]    021D: B4 2C                                 MOV AH, 2CH
+[ 114]    021F: CD 21                                 INT 21H
+[ 115]    0221: 8A C1                                 MOV AL, CL
+[ 116]    0223: D4 0A                                 AAM
+[ 117]    0225: 8B D8                                 MOV BX, AX
+[ 118]    0227: C6 06 56 10 01                        MOV BUFF, 1
+[ 119]    022C: C6 06 B5 10 00                        MOV HOUR, 0
+[ 120]    0231: C6 06 BA 10 01                        MOV MINUTE, 1
+[ 121]    0236: C6 06 BF 10 00                        MOV SECOND, 0
+[ 122]    023B: BA 33 20                              MOV DX, 2033H
+[ 123]    023E: E8 6E 04                              CALL DISPLAYTIME
+[ 124]    0241: C6 06 56 10 02                        MOV BUFF, 2
+[ 125]    0246: BA 34 20                              MOV DX, 2034H
+[ 126]    0249: E8 63 04                              CALL DISPLAYTIME
+[ 127]    024C: BA 35 20                              MOV DX, 2035H
+[ 128]    024F: A0 9D 10                              MOV AL, LINEn
+[ 129]    0252: EE                                    OUT DX, AL
+[ 130]    0253: E8 95 0C                              CALL CHECKTEMP
+[ 131]        :                                       ;GET SECONDS
+[ 132]    0256: B4 2C                                 MOV AH, 2CH
+[ 133]    0258: CD 21                                 INT 21H
+[ 134]    025A: 8A C6                                 MOV AL, DH
+[ 135]    025C: D4 0A                                 AAM
+[ 136]    025E: 8B D8                                 MOV BX, AX
+[ 137]    0260: C6 06 56 10 01                        MOV BUFF, 1
+[ 138]    0265: C6 06 B5 10 00                        MOV HOUR, 0
+[ 139]    026A: C6 06 BA 10 00                        MOV MINUTE, 0
+[ 140]    026F: C6 06 BF 10 01                        MOV SECOND, 1
+[ 141]    0274: BA 36 20                              MOV DX, 2036H
+[ 142]    0277: E8 35 04                              CALL DISPLAYTIME
+[ 143]    027A: C6 06 56 10 02                        MOV BUFF, 2
+[ 144]    027F: BA 37 20                              MOV DX, 2037H
+[ 145]    0282: E8 2A 04                              CALL DISPLAYTIME
+[ 146]    0285: E8 63 0C                              CALL CHECKTEMP
+[ 147]    0288: 80 3E 5A 10 01                        CMP ISWATERED, 1
+[ 148]    028D: 7D 03 E9 88 FE                        JL INFILOOP
+[ 149]    0292: E8 09 0A                              CALL SAVELOGS
+[ 150]    0295: C6 06 5A 10 00                        MOV ISWATERED, 0
+[ 151]    029A: E9 7D FE                              JMP INFILOOP
+[ 152]    029D: B4 4C                                 MOV AH, 4CH
+[ 153]    029F: CD 21                                 INT 21H
+[ 154]        :                                       
+[ 155]    02A1:                                       DISPLAYDATE PROC
+[ 156]    02A1: BE 00 00                              MOV SI, 0
+[ 157]    02A4: B9 05 00                              MOV CX, 5
+[ 158]    02A7: 80 3E 56 10 02                        CMP BUFF, 2
+[ 159]    02AC: 75 03 E9 03 02                        JE HERE
+[ 160]    02B1: 80 FF 00                              CMP BH, 00H
+[ 161]    02B4: 7F 2F                                 JG IF1
+[ 162]    02B6:                                       NEXT0:
+[ 163]    02B6: 8A 84 5C 10                           MOV AL, DOTS0[SI]
+[ 164]    02BA: EE                                    OUT DX, AL
+[ 165]    02BB: 46                                    INC SI
+[ 166]    02BC: 42                                    INC DX
+[ 167]    02BD: E2 F7                                 LOOP NEXT0
+[ 168]    02BF: 80 3E 9E 10 01                        CMP DAY, 1
+[ 169]    02C4: 7C 08                                 JL IFMONTH0
+[ 170]    02C6: C6 06 9F 10 30                        MOV DAY1, '0'
+[ 171]    02CB: E9 E0 03                              JMP DONE
+[ 172]    02CE:                                       IFMONTH0:
+[ 173]    02CE: 80 3E A3 10 01                        CMP MONTH, 1
+[ 174]    02D3: 7C 08                                 JL ISYEAR0
+[ 175]    02D5: C6 06 A4 10 30                        MOV MONTH1, '0'
+[ 176]    02DA: E9 D1 03                              JMP DONE
+[ 177]    02DD:                                       ISYEAR0:
+[ 178]    02DD: C6 06 A9 10 30                        MOV YEAR1, '0'
+[ 179]    02E2: E9 C9 03                              JMP DONE
+[ 180]    02E5:                                       IF1:
+[ 181]    02E5: 80 FF 02                              CMP BH,02H
+[ 182]    02E8: 7D 2F                                 JGE IF2
+[ 183]    02EA:                                       NEXT1:
+[ 184]    02EA: 8A 84 61 10                           MOV AL, DOTS1[SI]
+[ 185]    02EE: EE                                    OUT DX, AL
+[ 186]    02EF: 46                                    INC SI
+[ 187]    02F0: 42                                    INC DX
+[ 188]    02F1: E2 F7                                 LOOP NEXT1
+[ 189]    02F3: 80 3E 9E 10 01                        CMP DAY, 1
+[ 190]    02F8: 7C 08                                 JL IFMONTH1
+[ 191]    02FA: C6 06 9F 10 31                        MOV DAY1, '1'
+[ 192]    02FF: E9 AC 03                              JMP DONE
+[ 193]    0302:                                       IFMONTH1:
+[ 194]    0302: 80 3E A3 10 01                        CMP MONTH, 1
+[ 195]    0307: 7C 08                                 JL ISYEAR1
+[ 196]    0309: C6 06 A4 10 31                        MOV MONTH1, '1'
+[ 197]    030E: E9 9D 03                              JMP DONE
+[ 198]    0311:                                       ISYEAR1:
+[ 199]    0311: C6 06 A9 10 31                        MOV YEAR1, '1'
+[ 200]    0316: E9 95 03                              JMP DONE
+[ 201]    0319:                                       IF2:
+[ 202]    0319: 80 FF 03                              CMP BH,03H
+[ 203]    031C: 7D 2F                                 JGE IF3
+[ 204]    031E:                                       NEXT2:
+[ 205]    031E: 8A 84 66 10                           MOV AL, DOTS2[SI]
+[ 206]    0322: EE                                    OUT DX, AL
+[ 207]    0323: 46                                    INC SI
+[ 208]    0324: 42                                    INC DX
+[ 209]    0325: E2 F7                                 LOOP NEXT2
+[ 210]    0327: 80 3E 9E 10 01                        CMP DAY, 1
+[ 211]    032C: 7C 08                                 JL IFMONTH2
+[ 212]    032E: C6 06 9F 10 32                        MOV DAY1, '2'
+[ 213]    0333: E9 78 03                              JMP DONE
+[ 214]    0336:                                       IFMONTH2:
+[ 215]    0336: 80 3E A3 10 02                        CMP MONTH,2
+[ 216]    033B: 7C 08                                 JL ISYEAR2
+[ 217]    033D: C6 06 A4 10 32                        MOV MONTH1, '2'
+[ 218]    0342: E9 69 03                              JMP DONE
+[ 219]    0345:                                       ISYEAR2:
+[ 220]    0345: C6 06 A9 10 32                        MOV YEAR1, '2'
+[ 221]    034A: E9 61 03                              JMP DONE
+[ 222]    034D:                                       IF3:
+[ 223]    034D: 80 FF 04                              CMP BH,04H
+[ 224]    0350: 7D 2F                                 JGE IF4
+[ 225]    0352:                                       NEXT3:
+[ 226]    0352: 8A 84 6B 10                           MOV AL, DOTS3[SI]
+[ 227]    0356: EE                                    OUT DX, AL
+[ 228]    0357: 46                                    INC SI
+[ 229]    0358: 42                                    INC DX
+[ 230]    0359: E2 F7                                 LOOP NEXT3
+[ 231]    035B: 80 3E 9E 10 01                        CMP DAY, 1
+[ 232]    0360: 7C 08                                 JL IFMONTH3
+[ 233]    0362: C6 06 9F 10 33                        MOV DAY1, '3'
+[ 234]    0367: E9 44 03                              JMP DONE
+[ 235]    036A:                                       IFMONTH3:
+[ 236]    036A: 80 3E A3 10 01                        CMP MONTH, 1
+[ 237]    036F: 7C 08                                 JL ISYEAR3
+[ 238]    0371: C6 06 A4 10 33                        MOV MONTH1, '3'
+[ 239]    0376: E9 35 03                              JMP DONE
+[ 240]    0379:                                       ISYEAR3:
+[ 241]    0379: C6 06 A9 10 33                        MOV YEAR1, '3'
+[ 242]    037E: E9 2D 03                              JMP DONE
+[ 243]    0381:                                       IF4:
+[ 244]    0381: 80 FF 05                              CMP BH,05H
+[ 245]    0384: 7D 2F                                 JGE IF5
+[ 246]    0386:                                       NEXT4:
+[ 247]    0386: 8A 84 70 10                           MOV AL, DOTS4[SI]
+[ 248]    038A: EE                                    OUT DX, AL
+[ 249]    038B: 46                                    INC SI
+[ 250]    038C: 42                                    INC DX
+[ 251]    038D: E2 F7                                 LOOP NEXT4
+[ 252]    038F: 80 3E 9E 10 01                        CMP DAY, 1
+[ 253]    0394: 7C 08                                 JL IFMONTH4
+[ 254]    0396: C6 06 9F 10 34                        MOV DAY1, '4'
+[ 255]    039B: E9 10 03                              JMP DONE
+[ 256]    039E:                                       IFMONTH4:
+[ 257]    039E: 80 3E A3 10 01                        CMP MONTH, 1
+[ 258]    03A3: 7C 08                                 JL ISYEAR4
+[ 259]    03A5: C6 06 A4 10 34                        MOV MONTH1, '4'
+[ 260]    03AA: E9 01 03                              JMP DONE
+[ 261]    03AD:                                       ISYEAR4:
+[ 262]    03AD: C6 06 A9 10 34                        MOV YEAR1, '4'
+[ 263]    03B2: E9 F9 02                              JMP DONE
+[ 264]    03B5:                                       IF5:
+[ 265]    03B5: 80 FF 06                              CMP BH,06H
+[ 266]    03B8: 7D 2F                                 JGE IF6
+[ 267]    03BA:                                       NEXT5:
+[ 268]    03BA: 8A 84 75 10                           MOV AL, DOTS5[SI]
+[ 269]    03BE: EE                                    OUT DX, AL
+[ 270]    03BF: 46                                    INC SI
+[ 271]    03C0: 42                                    INC DX
+[ 272]    03C1: E2 F7                                 LOOP NEXT5
+[ 273]    03C3: 80 3E 9E 10 01                        CMP DAY, 1
+[ 274]    03C8: 7C 08                                 JL IFMONTH5
+[ 275]    03CA: C6 06 9F 10 35                        MOV DAY1, '5'
+[ 276]    03CF: E9 DC 02                              JMP DONE
+[ 277]    03D2:                                       IFMONTH5:
+[ 278]    03D2: 80 3E A3 10 01                        CMP MONTH, 1
+[ 279]    03D7: 7C 08                                 JL ISYEAR5
+[ 280]    03D9: C6 06 A4 10 35                        MOV MONTH1, '5'
+[ 281]    03DE: E9 CD 02                              JMP DONE
+[ 282]    03E1:                                       ISYEAR5:
+[ 283]    03E1: C6 06 A9 10 35                        MOV YEAR1, '5'
+[ 284]    03E6: E9 C5 02                              JMP DONE
+[ 285]    03E9:                                       IF6:
+[ 286]    03E9: 80 FF 07                              CMP BH,07H
+[ 287]    03EC: 7D 2F                                 JGE IF7
+[ 288]    03EE:                                       NEXT6:
+[ 289]    03EE: 8A 84 7A 10                           MOV AL, DOTS6[SI]
+[ 290]    03F2: EE                                    OUT DX, AL
+[ 291]    03F3: 46                                    INC SI
+[ 292]    03F4: 42                                    INC DX
+[ 293]    03F5: E2 F7                                 LOOP NEXT6
+[ 294]    03F7: 80 3E 9E 10 01                        CMP DAY, 1
+[ 295]    03FC: 7C 08                                 JL IFMONTH6
+[ 296]    03FE: C6 06 9F 10 36                        MOV DAY1, '6'
+[ 297]    0403: E9 A8 02                              JMP DONE
+[ 298]    0406:                                       IFMONTH6:
+[ 299]    0406: 80 3E A3 10 01                        CMP MONTH, 1
+[ 300]    040B: 7C 08                                 JL ISYEAR6
+[ 301]    040D: C6 06 A4 10 36                        MOV MONTH1, '6'
+[ 302]    0412: E9 99 02                              JMP DONE
+[ 303]    0415:                                       ISYEAR6:
+[ 304]    0415: C6 06 A9 10 36                        MOV YEAR1, '6'
+[ 305]    041A: E9 91 02                              JMP DONE
+[ 306]    041D:                                       IF7:
+[ 307]    041D: 80 FF 08                              CMP BH,08H
+[ 308]    0420: 7D 2F                                 JGE IF8
+[ 309]    0422:                                       NEXT7:
+[ 310]    0422: 8A 84 7F 10                           MOV AL, DOTS7[SI]
+[ 311]    0426: EE                                    OUT DX, AL
+[ 312]    0427: 46                                    INC SI
+[ 313]    0428: 42                                    INC DX
+[ 314]    0429: E2 F7                                 LOOP NEXT7
+[ 315]    042B: 80 3E 9E 10 01                        CMP DAY, 1
+[ 316]    0430: 7C 08                                 JL IFMONTH7
+[ 317]    0432: C6 06 9F 10 37                        MOV DAY1, '7'
+[ 318]    0437: E9 74 02                              JMP DONE
+[ 319]    043A:                                       IFMONTH7:
+[ 320]    043A: 80 3E A3 10 01                        CMP MONTH, 1
+[ 321]    043F: 7C 08                                 JL ISYEAR7
+[ 322]    0441: C6 06 A4 10 37                        MOV MONTH1, '7'
+[ 323]    0446: E9 65 02                              JMP DONE
+[ 324]    0449:                                       ISYEAR7:
+[ 325]    0449: C6 06 A9 10 37                        MOV YEAR1, '7'
+[ 326]    044E: E9 5D 02                              JMP DONE
+[ 327]    0451:                                       IF8:
+[ 328]    0451: 80 FF 09                              CMP BH,09H
+[ 329]    0454: 7D 2F                                 JGE IF9
+[ 330]    0456:                                       NEXT8:
+[ 331]    0456: 8A 84 84 10                           MOV AL, DOTS8[SI]
+[ 332]    045A: EE                                    OUT DX, AL
+[ 333]    045B: 46                                    INC SI
+[ 334]    045C: 42                                    INC DX
+[ 335]    045D: E2 F7                                 LOOP NEXT8
+[ 336]    045F: 80 3E 9E 10 01                        CMP DAY, 1
+[ 337]    0464: 7C 08                                 JL IFMONTH8
+[ 338]    0466: C6 06 9F 10 38                        MOV DAY1, '8'
+[ 339]    046B: E9 40 02                              JMP DONE
+[ 340]    046E:                                       IFMONTH8:
+[ 341]    046E: 80 3E A3 10 01                        CMP MONTH, 1
+[ 342]    0473: 7C 08                                 JL ISYEAR8
+[ 343]    0475: C6 06 A4 10 38                        MOV MONTH1, '8'
+[ 344]    047A: E9 31 02                              JMP DONE
+[ 345]    047D:                                       ISYEAR8:
+[ 346]    047D: C6 06 A9 10 38                        MOV YEAR1, '8'
+[ 347]    0482: E9 29 02                              JMP DONE
+[ 348]    0485:                                       IF9:
+[ 349]    0485:                                       NEXT9:
+[ 350]    0485: 8A 84 89 10                           MOV AL, DOTS9[SI]
+[ 351]    0489: EE                                    OUT DX, AL
+[ 352]    048A: 46                                    INC SI
+[ 353]    048B: 42                                    INC DX
+[ 354]    048C: E2 F7                                 LOOP NEXT9
+[ 355]    048E: 80 3E 9E 10 01                        CMP DAY, 1
+[ 356]    0493: 7C 08                                 JL IFMONTH9
+[ 357]    0495: C6 06 9F 10 39                        MOV DAY1, '9'
+[ 358]    049A: E9 11 02                              JMP DONE
+[ 359]    049D:                                       IFMONTH9:
+[ 360]    049D: 80 3E A3 10 01                        CMP MONTH, 1
+[ 361]    04A2: 7C 08                                 JL ISYEAR9
+[ 362]    04A4: C6 06 A4 10 39                        MOV MONTH1, '9'
+[ 363]    04A9: E9 02 02                              JMP DONE
+[ 364]    04AC:                                       ISYEAR9:
+[ 365]    04AC: C6 06 A9 10 39                        MOV YEAR1, '9'
+[ 366]    04B1: E9 FA 01                              JMP DONE
+[ 367]    04B4:                                       HERE:
+[ 368]    04B4: 80 FB 00                              CMP BL, 00H
+[ 369]    04B7: 7F 2F                                 JG IFF1
+[ 370]    04B9:                                       NEXTT0:
+[ 371]    04B9: 8A 84 5C 10                           MOV AL, DOTS0[SI]
+[ 372]    04BD: EE                                    OUT DX, AL
+[ 373]    04BE: 46                                    INC SI
+[ 374]    04BF: 42                                    INC DX
+[ 375]    04C0: E2 F7                                 LOOP NEXTT0
+[ 376]    04C2: 80 3E 9E 10 01                        CMP DAY, 1
+[ 377]    04C7: 7C 08                                 JL IFMONTH00
+[ 378]    04C9: C6 06 A1 10 30                        MOV DAY2, '0'
+[ 379]    04CE: E9 DD 01                              JMP DONE
+[ 380]    04D1:                                       IFMONTH00:
+[ 381]    04D1: 80 3E A3 10 01                        CMP MONTH, 1
+[ 382]    04D6: 7C 08                                 JL ISYEAR00
+[ 383]    04D8: C6 06 A6 10 30                        MOV MONTH2, '0'
+[ 384]    04DD: E9 CE 01                              JMP DONE
+[ 385]    04E0:                                       ISYEAR00:
+[ 386]    04E0: C6 06 AB 10 30                        MOV YEAR2, '0'
+[ 387]    04E5: E9 C6 01                              JMP DONE
+[ 388]    04E8:                                       IFF1:
+[ 389]    04E8: 80 FB 02                              CMP BL,02H
+[ 390]    04EB: 7D 2F                                 JGE IFF2
+[ 391]    04ED:                                       NEXTT1:
+[ 392]    04ED: 8A 84 61 10                           MOV AL, DOTS1[SI]
+[ 393]    04F1: EE                                    OUT DX, AL
+[ 394]    04F2: 46                                    INC SI
+[ 395]    04F3: 42                                    INC DX
+[ 396]    04F4: E2 F7                                 LOOP NEXTT1
+[ 397]    04F6: 80 3E 9E 10 01                        CMP DAY, 1
+[ 398]    04FB: 7C 08                                 JL IFMONTH01
+[ 399]    04FD: C6 06 A1 10 31                        MOV DAY2, '1'
+[ 400]    0502: E9 A9 01                              JMP DONE
+[ 401]    0505:                                       IFMONTH01:
+[ 402]    0505: 80 3E A3 10 01                        CMP MONTH, 1
+[ 403]    050A: 7C 08                                 JL ISYEAR01
+[ 404]    050C: C6 06 A6 10 31                        MOV MONTH2, '1'
+[ 405]    0511: E9 9A 01                              JMP DONE
+[ 406]    0514:                                       ISYEAR01:
+[ 407]    0514: C6 06 AB 10 31                        MOV YEAR2, '1'
+[ 408]    0519: E9 92 01                              JMP DONE
+[ 409]    051C:                                       IFF2:
+[ 410]    051C: 80 FB 03                              CMP BL,03H
+[ 411]    051F: 7D 2F                                 JGE IFF3
+[ 412]    0521:                                       NEXTT2:
+[ 413]    0521: 8A 84 66 10                           MOV AL, DOTS2[SI]
+[ 414]    0525: EE                                    OUT DX, AL
+[ 415]    0526: 46                                    INC SI
+[ 416]    0527: 42                                    INC DX
+[ 417]    0528: E2 F7                                 LOOP NEXTT2
+[ 418]    052A: 80 3E 9E 10 01                        CMP DAY, 1
+[ 419]    052F: 7C 08                                 JL IFMONTH02
+[ 420]    0531: C6 06 A1 10 32                        MOV DAY2, '2'
+[ 421]    0536: E9 75 01                              JMP DONE
+[ 422]    0539:                                       IFMONTH02:
+[ 423]    0539: 80 3E A3 10 01                        CMP MONTH, 1
+[ 424]    053E: 7C 08                                 JL ISYEAR02
+[ 425]    0540: C6 06 A6 10 32                        MOV MONTH2, '2'
+[ 426]    0545: E9 66 01                              JMP DONE
+[ 427]    0548:                                       ISYEAR02:
+[ 428]    0548: C6 06 AB 10 32                        MOV YEAR2, '2'
+[ 429]    054D: E9 5E 01                              JMP DONE
+[ 430]    0550:                                       IFF3:
+[ 431]    0550: 80 FB 04                              CMP BL,04H
+[ 432]    0553: 7D 2F                                 JGE IFF4
+[ 433]    0555:                                       NEXTT3:
+[ 434]    0555: 8A 84 6B 10                           MOV AL, DOTS3[SI]
+[ 435]    0559: EE                                    OUT DX, AL
+[ 436]    055A: 46                                    INC SI
+[ 437]    055B: 42                                    INC DX
+[ 438]    055C: E2 F7                                 LOOP NEXTT3
+[ 439]    055E: 80 3E 9E 10 01                        CMP DAY, 1
+[ 440]    0563: 7C 08                                 JL IFMONTH03
+[ 441]    0565: C6 06 A1 10 33                        MOV DAY2, '3'
+[ 442]    056A: E9 41 01                              JMP DONE
+[ 443]    056D:                                       IFMONTH03:
+[ 444]    056D: 80 3E A3 10 01                        CMP MONTH, 1
+[ 445]    0572: 7C 08                                 JL ISYEAR03
+[ 446]    0574: C6 06 A6 10 33                        MOV MONTH2, '3'
+[ 447]    0579: E9 32 01                              JMP DONE
+[ 448]    057C:                                       ISYEAR03:
+[ 449]    057C: C6 06 AB 10 33                        MOV YEAR2, '3'
+[ 450]    0581: E9 2A 01                              JMP DONE
+[ 451]    0584:                                       IFF4:
+[ 452]    0584: 80 FB 05                              CMP BL,05H
+[ 453]    0587: 7D 2F                                 JGE IFF5
+[ 454]    0589:                                       NEXTT4:
+[ 455]    0589: 8A 84 70 10                           MOV AL, DOTS4[SI]
+[ 456]    058D: EE                                    OUT DX, AL
+[ 457]    058E: 46                                    INC SI
+[ 458]    058F: 42                                    INC DX
+[ 459]    0590: E2 F7                                 LOOP NEXTT4
+[ 460]    0592: 80 3E 9E 10 01                        CMP DAY, 1
+[ 461]    0597: 7C 08                                 JL IFMONTH04
+[ 462]    0599: C6 06 A1 10 34                        MOV DAY2, '4'
+[ 463]    059E: E9 0D 01                              JMP DONE
+[ 464]    05A1:                                       IFMONTH04:
+[ 465]    05A1: 80 3E A3 10 01                        CMP MONTH, 1
+[ 466]    05A6: 7C 08                                 JL ISYEAR04
+[ 467]    05A8: C6 06 A6 10 34                        MOV MONTH2, '4'
+[ 468]    05AD: E9 FE 00                              JMP DONE
+[ 469]    05B0:                                       ISYEAR04:
+[ 470]    05B0: C6 06 AB 10 34                        MOV YEAR2, '4'
+[ 471]    05B5: E9 F6 00                              JMP DONE
+[ 472]    05B8:                                       IFF5:
+[ 473]    05B8: 80 FB 06                              CMP BL,06H
+[ 474]    05BB: 7D 2F                                 JGE IFF6
+[ 475]    05BD:                                       NEXTT5:
+[ 476]    05BD: 8A 84 75 10                           MOV AL, DOTS5[SI]
+[ 477]    05C1: EE                                    OUT DX, AL
+[ 478]    05C2: 46                                    INC SI
+[ 479]    05C3: 42                                    INC DX
+[ 480]    05C4: E2 F7                                 LOOP NEXTT5
+[ 481]    05C6: 80 3E 9E 10 01                        CMP DAY, 1
+[ 482]    05CB: 7C 08                                 JL IFMONTH05
+[ 483]    05CD: C6 06 A1 10 35                        MOV DAY2, '5'
+[ 484]    05D2: E9 D9 00                              JMP DONE
+[ 485]    05D5:                                       IFMONTH05:
+[ 486]    05D5: 80 3E A3 10 01                        CMP MONTH, 1
+[ 487]    05DA: 7C 08                                 JL ISYEAR05
+[ 488]    05DC: C6 06 A6 10 35                        MOV MONTH2, '5'
+[ 489]    05E1: E9 CA 00                              JMP DONE
+[ 490]    05E4:                                       ISYEAR05:
+[ 491]    05E4: C6 06 AB 10 35                        MOV YEAR2, '5'
+[ 492]    05E9: E9 C2 00                              JMP DONE
+[ 493]    05EC:                                       IFF6:
+[ 494]    05EC: 80 FB 07                              CMP BL,07H
+[ 495]    05EF: 7D 2F                                 JGE IFF7
+[ 496]    05F1:                                       NEXTT6:
+[ 497]    05F1: 8A 84 7A 10                           MOV AL, DOTS6[SI]
+[ 498]    05F5: EE                                    OUT DX, AL
+[ 499]    05F6: 46                                    INC SI
+[ 500]    05F7: 42                                    INC DX
+[ 501]    05F8: E2 F7                                 LOOP NEXTT6
+[ 502]    05FA: 80 3E 9E 10 01                        CMP DAY, 1
+[ 503]    05FF: 7C 08                                 JL IFMONTH06
+[ 504]    0601: C6 06 A1 10 36                        MOV DAY2, '6'
+[ 505]    0606: E9 A5 00                              JMP DONE
+[ 506]    0609:                                       IFMONTH06:
+[ 507]    0609: 80 3E A3 10 01                        CMP MONTH, 1
+[ 508]    060E: 7C 08                                 JL ISYEAR06
+[ 509]    0610: C6 06 A6 10 36                        MOV MONTH2, '6'
+[ 510]    0615: E9 96 00                              JMP DONE
+[ 511]    0618:                                       ISYEAR06:
+[ 512]    0618: C6 06 AB 10 36                        MOV YEAR2, '6'
+[ 513]    061D: E9 8E 00                              JMP DONE
+[ 514]    0620:                                       IFF7:
+[ 515]    0620: 80 FB 08                              CMP BL,08H
+[ 516]    0623: 7D 2C                                 JGE IFF8
+[ 517]    0625:                                       NEXTT7:
+[ 518]    0625: 8A 84 7F 10                           MOV AL, DOTS7[SI]
+[ 519]    0629: EE                                    OUT DX, AL
+[ 520]    062A: 46                                    INC SI
+[ 521]    062B: 42                                    INC DX
+[ 522]    062C: E2 F7                                 LOOP NEXTT7
+[ 523]    062E: 80 3E 9E 10 01                        CMP DAY, 1
+[ 524]    0633: 7C 07                                 JL IFMONTH07
+[ 525]    0635: C6 06 A1 10 37                        MOV DAY2, '7'
+[ 526]    063A: EB 72                                 JMP DONE
+[ 527]    063C:                                       IFMONTH07:
+[ 528]    063C: 80 3E A3 10 01                        CMP MONTH, 1
+[ 529]    0641: 7C 07                                 JL ISYEAR07
+[ 530]    0643: C6 06 A6 10 37                        MOV MONTH2, '7'
+[ 531]    0648: EB 64                                 JMP DONE
+[ 532]    064A:                                       ISYEAR07:
+[ 533]    064A: C6 06 AB 10 37                        MOV YEAR2, '7'
+[ 534]    064F: EB 5D                                 JMP DONE
+[ 535]    0651:                                       IFF8:
+[ 536]    0651: 80 FB 09                              CMP BL,09H
+[ 537]    0654: 7D 2C                                 JGE IFF9
+[ 538]    0656:                                       NEXTT8:
+[ 539]    0656: 8A 84 84 10                           MOV AL, DOTS8[SI]
+[ 540]    065A: EE                                    OUT DX, AL
+[ 541]    065B: 46                                    INC SI
+[ 542]    065C: 42                                    INC DX
+[ 543]    065D: E2 F7                                 LOOP NEXTT8
+[ 544]    065F: 80 3E 9E 10 01                        CMP DAY, 1
+[ 545]    0664: 7C 07                                 JL IFMONTH08
+[ 546]    0666: C6 06 A1 10 38                        MOV DAY2, '8'
+[ 547]    066B: EB 41                                 JMP DONE
+[ 548]    066D:                                       IFMONTH08:
+[ 549]    066D: 80 3E A3 10 01                        CMP MONTH, 1
+[ 550]    0672: 7C 07                                 JL ISYEAR08
+[ 551]    0674: C6 06 A6 10 38                        MOV MONTH2, '8'
+[ 552]    0679: EB 33                                 JMP DONE
+[ 553]    067B:                                       ISYEAR08:
+[ 554]    067B: C6 06 AB 10 38                        MOV YEAR2, '8'
+[ 555]    0680: EB 2C                                 JMP DONE
+[ 556]    0682:                                       IFF9:
+[ 557]    0682:                                       NEXTT9:
+[ 558]    0682: 8A 84 89 10                           MOV AL, DOTS9[SI]
+[ 559]    0686: EE                                    OUT DX, AL
+[ 560]    0687: 46                                    INC SI
+[ 561]    0688: 42                                    INC DX
+[ 562]    0689: E2 F7                                 LOOP NEXTT9
+[ 563]    068B: 80 3E 9E 10 01                        CMP DAY, 1
+[ 564]    0690: 7C 07                                 JL IFMONTH09
+[ 565]    0692: C6 06 A1 10 39                        MOV DAY2, '9'
+[ 566]    0697: EB 15                                 JMP DONE
+[ 567]    0699:                                       IFMONTH09:
+[ 568]    0699: 80 3E A3 10 01                        CMP MONTH, 1
+[ 569]    069E: 7C 07                                 JL ISYEAR09
+[ 570]    06A0: C6 06 A6 10 39                        MOV MONTH2, '9'
+[ 571]    06A5: EB 07                                 JMP DONE
+[ 572]    06A7:                                       ISYEAR09:
+[ 573]    06A7: C6 06 AB 10 39                        MOV YEAR2, '9'
+[ 574]    06AC: EB 00                                 JMP DONE
+[ 575]        :                                       
+[ 576]    06AE:                                       DONE:
+[ 577]    06AE: C3                                    RET
+[ 578]        :                                       DISPLAYDATE ENDP
+[ 579]        :                                       
+[ 580]    06AF:                                       DISPLAYTIME PROC
+[ 581]    06AF: 80 3E 56 10 02                        CMP BUFF, 2
+[ 582]    06B4: 75 03 E9 D1 01                        JE HERETIME
+[ 583]    06B9: 80 FF 00                              CMP BH, 00H
+[ 584]    06BC: 7F 2A                                 JG IFT1
+[ 585]    06BE: A0 93 10                              MOV AL, LINE0
+[ 586]    06C1: EE                                    OUT DX, AL
+[ 587]    06C2: 80 3E B5 10 01                        CMP HOUR, 1
+[ 588]    06C7: 7C 08                                 JL CHECKMINUTE0
+[ 589]    06C9: C6 06 B6 10 30                        MOV HOUR1, '0'
+[ 590]    06CE: E9 80 03                              JMP DONETIME
+[ 591]    06D1:                                       CHECKMINUTE0:
+[ 592]    06D1: 80 3E BA 10 01                        CMP MINUTE, 1
+[ 593]    06D6: 7C 08                                 JL ISSECOND0
+[ 594]    06D8: C6 06 BB 10 30                        MOV MINUTE1, '0'
+[ 595]    06DD: E9 71 03                              JMP DONETIME
+[ 596]    06E0:                                       ISSECOND0:
+[ 597]    06E0: C6 06 C0 10 30                        MOV SECOND1, '0'
+[ 598]    06E5: E9 69 03                              JMP DONETIME
+[ 599]    06E8:                                       IFT1:
+[ 600]    06E8: 80 FF 02                              CMP BH, 02H
+[ 601]    06EB: 7D 2A                                 JGE IFT2
+[ 602]    06ED: A0 94 10                              MOV AL, LINE1
+[ 603]    06F0: EE                                    OUT DX, AL
+[ 604]    06F1: 80 3E B5 10 01                        CMP HOUR, 1
+[ 605]    06F6: 7C 08                                 JL CHECKMINUTE1
+[ 606]    06F8: C6 06 B6 10 31                        MOV HOUR1, '1'
+[ 607]    06FD: E9 51 03                              JMP DONETIME
+[ 608]    0700:                                       CHECKMINUTE1:
+[ 609]    0700: 80 3E BA 10 01                        CMP MINUTE, 1
+[ 610]    0705: 7C 08                                 JL ISSECOND1
+[ 611]    0707: C6 06 BB 10 31                        MOV MINUTE1, '1'
+[ 612]    070C: E9 42 03                              JMP DONETIME
+[ 613]    070F:                                       ISSECOND1:
+[ 614]    070F: C6 06 C0 10 31                        MOV SECOND1, '1'
+[ 615]    0714: E9 3A 03                              JMP DONETIME
+[ 616]    0717:                                       IFT2:
+[ 617]    0717: 80 FF 03                              CMP BH, 03H
+[ 618]    071A: 7D 2A                                 JGE IFT3
+[ 619]    071C: A0 95 10                              MOV AL, LINE2
+[ 620]    071F: EE                                    OUT DX, AL
+[ 621]    0720: 80 3E B5 10 01                        CMP HOUR, 1
+[ 622]    0725: 7C 08                                 JL CHECKMINUTE2
+[ 623]    0727: C6 06 B6 10 32                        MOV HOUR1, '2'
+[ 624]    072C: E9 22 03                              JMP DONETIME
+[ 625]    072F:                                       CHECKMINUTE2:
+[ 626]    072F: 80 3E BA 10 01                        CMP MINUTE, 1
+[ 627]    0734: 7C 08                                 JL ISSECOND2
+[ 628]    0736: C6 06 BB 10 32                        MOV MINUTE1, '2'
+[ 629]    073B: E9 13 03                              JMP DONETIME
+[ 630]    073E:                                       ISSECOND2:
+[ 631]    073E: C6 06 C0 10 32                        MOV SECOND1, '2'
+[ 632]    0743: E9 0B 03                              JMP DONETIME
+[ 633]    0746:                                       IFT3:
+[ 634]    0746: 80 FF 04                              CMP BH, 04H
+[ 635]    0749: 7D 2A                                 JGE IFT4
+[ 636]    074B: A0 96 10                              MOV AL, LINE3
+[ 637]    074E: EE                                    OUT DX, AL
+[ 638]    074F: 80 3E B5 10 01                        CMP HOUR, 1
+[ 639]    0754: 7C 08                                 JL CHECKMINUTE3
+[ 640]    0756: C6 06 B6 10 33                        MOV HOUR1, '3'
+[ 641]    075B: E9 F3 02                              JMP DONETIME
+[ 642]    075E:                                       CHECKMINUTE3:
+[ 643]    075E: 80 3E BA 10 01                        CMP MINUTE, 1
+[ 644]    0763: 7C 08                                 JL ISSECOND3
+[ 645]    0765: C6 06 BB 10 33                        MOV MINUTE1, '3'
+[ 646]    076A: E9 E4 02                              JMP DONETIME
+[ 647]    076D:                                       ISSECOND3:
+[ 648]    076D: C6 06 C0 10 33                        MOV SECOND1, '3'
+[ 649]    0772: E9 DC 02                              JMP DONETIME
+[ 650]    0775:                                       IFT4:
+[ 651]    0775: 80 FF 05                              CMP BH, 05H
+[ 652]    0778: 7D 2A                                 JGE IFT5
+[ 653]    077A: A0 97 10                              MOV AL, LINE4
+[ 654]    077D: EE                                    OUT DX, AL
+[ 655]    077E: 80 3E B5 10 01                        CMP HOUR, 1
+[ 656]    0783: 7C 08                                 JL CHECKMINUTE4
+[ 657]    0785: C6 06 B6 10 34                        MOV HOUR1, '4'
+[ 658]    078A: E9 C4 02                              JMP DONETIME
+[ 659]    078D:                                       CHECKMINUTE4:
+[ 660]    078D: 80 3E BA 10 01                        CMP MINUTE, 1
+[ 661]    0792: 7C 08                                 JL ISSECOND4
+[ 662]    0794: C6 06 BB 10 34                        MOV MINUTE1, '4'
+[ 663]    0799: E9 B5 02                              JMP DONETIME
+[ 664]    079C:                                       ISSECOND4:
+[ 665]    079C: C6 06 C0 10 34                        MOV SECOND1, '4'
+[ 666]    07A1: E9 AD 02                              JMP DONETIME
+[ 667]    07A4:                                       IFT5:
+[ 668]    07A4: 80 FF 06                              CMP BH, 06H
+[ 669]    07A7: 7D 2A                                 JGE IFT6
+[ 670]    07A9: A0 98 10                              MOV AL, LINE5
+[ 671]    07AC: EE                                    OUT DX, AL
+[ 672]    07AD: 80 3E B5 10 01                        CMP HOUR, 1
+[ 673]    07B2: 7C 08                                 JL CHECKMINUTE5
+[ 674]    07B4: C6 06 B6 10 35                        MOV HOUR1, '5'
+[ 675]    07B9: E9 95 02                              JMP DONETIME
+[ 676]    07BC:                                       CHECKMINUTE5:
+[ 677]    07BC: 80 3E BA 10 01                        CMP MINUTE, 1
+[ 678]    07C1: 7C 08                                 JL ISSECOND5
+[ 679]    07C3: C6 06 BB 10 35                        MOV MINUTE1, '5'
+[ 680]    07C8: E9 86 02                              JMP DONETIME
+[ 681]    07CB:                                       ISSECOND5:
+[ 682]    07CB: C6 06 C0 10 35                        MOV SECOND1, '5'
+[ 683]    07D0: E9 7E 02                              JMP DONETIME
+[ 684]    07D3:                                       IFT6:
+[ 685]    07D3: 80 FF 07                              CMP BH, 07H
+[ 686]    07D6: 7D 2A                                 JGE IFT7
+[ 687]    07D8: A0 99 10                              MOV AL, LINE6
+[ 688]    07DB: EE                                    OUT DX, AL
+[ 689]    07DC: 80 3E B5 10 01                        CMP HOUR, 1
+[ 690]    07E1: 7C 08                                 JL CHECKMINUTE6
+[ 691]    07E3: C6 06 B6 10 36                        MOV HOUR1, '6'
+[ 692]    07E8: E9 66 02                              JMP DONETIME
+[ 693]    07EB:                                       CHECKMINUTE6:
+[ 694]    07EB: 80 3E BA 10 01                        CMP MINUTE, 1
+[ 695]    07F0: 7C 08                                 JL ISSECOND6
+[ 696]    07F2: C6 06 BB 10 36                        MOV MINUTE1, '6'
+[ 697]    07F7: E9 57 02                              JMP DONETIME
+[ 698]    07FA:                                       ISSECOND6:
+[ 699]    07FA: C6 06 C0 10 36                        MOV SECOND1, '6'
+[ 700]    07FF: E9 4F 02                              JMP DONETIME
+[ 701]    0802:                                       IFT7:
+[ 702]    0802: 80 FF 08                              CMP BH, 08H
+[ 703]    0805: 7D 2A                                 JGE IFT8
+[ 704]    0807: A0 9A 10                              MOV AL, LINE7
+[ 705]    080A: EE                                    OUT DX, AL
+[ 706]    080B: 80 3E B5 10 01                        CMP HOUR, 1
+[ 707]    0810: 7C 08                                 JL CHECKMINUTE7
+[ 708]    0812: C6 06 B6 10 37                        MOV HOUR1, '7'
+[ 709]    0817: E9 37 02                              JMP DONETIME
+[ 710]    081A:                                       CHECKMINUTE7:
+[ 711]    081A: 80 3E BA 10 01                        CMP MINUTE, 1
+[ 712]    081F: 7C 08                                 JL ISSECOND7
+[ 713]    0821: C6 06 BB 10 37                        MOV MINUTE1, '7'
+[ 714]    0826: E9 28 02                              JMP DONETIME
+[ 715]    0829:                                       ISSECOND7:
+[ 716]    0829: C6 06 C0 10 37                        MOV SECOND1, '7'
+[ 717]    082E: E9 20 02                              JMP DONETIME
+[ 718]    0831:                                       IFT8:
+[ 719]    0831: 80 FF 09                              CMP BH, 09H
+[ 720]    0834: 7D 2A                                 JGE IFT9
+[ 721]    0836: A0 9B 10                              MOV AL, LINE8
+[ 722]    0839: EE                                    OUT DX, AL
+[ 723]    083A: 80 3E B5 10 01                        CMP HOUR, 1
+[ 724]    083F: 7C 08                                 JL CHECKMINUTE8
+[ 725]    0841: C6 06 B6 10 38                        MOV HOUR1, '8'
+[ 726]    0846: E9 08 02                              JMP DONETIME
+[ 727]    0849:                                       CHECKMINUTE8:
+[ 728]    0849: 80 3E BA 10 01                        CMP MINUTE, 1
+[ 729]    084E: 7C 08                                 JL ISSECOND8
+[ 730]    0850: C6 06 BB 10 38                        MOV MINUTE1, '8'
+[ 731]    0855: E9 F9 01                              JMP DONETIME
+[ 732]    0858:                                       ISSECOND8:
+[ 733]    0858: C6 06 C0 10 38                        MOV SECOND1, '8'
+[ 734]    085D: E9 F1 01                              JMP DONETIME
+[ 735]    0860:                                       IFT9:
+[ 736]    0860: A0 9C 10                              MOV AL, LINE9
+[ 737]    0863: EE                                    OUT DX, AL
+[ 738]    0864: 80 3E B5 10 01                        CMP HOUR, 1
+[ 739]    0869: 7C 08                                 JL CHECKMINUTE9
+[ 740]    086B: C6 06 B6 10 39                        MOV HOUR1, '9'
+[ 741]    0870: E9 DE 01                              JMP DONETIME
+[ 742]    0873:                                       CHECKMINUTE9:
+[ 743]    0873: 80 3E BA 10 01                        CMP MINUTE, 1
+[ 744]    0878: 7C 08                                 JL ISSECOND9
+[ 745]    087A: C6 06 BB 10 39                        MOV MINUTE1, '9'
+[ 746]    087F: E9 CF 01                              JMP DONETIME
+[ 747]    0882:                                       ISSECOND9:
+[ 748]    0882: C6 06 C0 10 39                        MOV SECOND1, '9'
+[ 749]    0887: E9 C7 01                              JMP DONETIME
+[ 750]        :                                       
+[ 751]    088A:                                       HERETIME:
+[ 752]    088A: 80 FB 00                              CMP BL, 00H
+[ 753]    088D: 7F 2A                                 JG IFFT1
+[ 754]    088F: A0 93 10                              MOV AL, LINE0
+[ 755]    0892: EE                                    OUT DX, AL
+[ 756]    0893: 80 3E B5 10 01                        CMP HOUR, 1
+[ 757]    0898: 7C 08                                 JL CHECKMINUTE00
+[ 758]    089A: C6 06 B8 10 30                        MOV HOUR2, '0'
+[ 759]    089F: E9 AF 01                              JMP DONETIME
+[ 760]    08A2:                                       CHECKMINUTE00:
+[ 761]    08A2: 80 3E BA 10 01                        CMP MINUTE, 1
+[ 762]    08A7: 7C 08                                 JL ISSECOND00
+[ 763]    08A9: C6 06 BD 10 30                        MOV MINUTE2, '0'
+[ 764]    08AE: E9 A0 01                              JMP DONETIME
+[ 765]    08B1:                                       ISSECOND00:
+[ 766]    08B1: C6 06 C2 10 30                        MOV SECOND2, '0'
+[ 767]    08B6: E9 98 01                              JMP DONETIME
+[ 768]    08B9:                                       IFFT1:
+[ 769]    08B9: 80 FB 02                              CMP BL, 02H
+[ 770]    08BC: 7D 2A                                 JGE IFFT2
+[ 771]    08BE: A0 94 10                              MOV AL, LINE1
+[ 772]    08C1: EE                                    OUT DX, AL
+[ 773]    08C2: 80 3E B5 10 01                        CMP HOUR, 1
+[ 774]    08C7: 7C 08                                 JL CHECKMINUTE01
+[ 775]    08C9: C6 06 B8 10 31                        MOV HOUR2, '1'
+[ 776]    08CE: E9 80 01                              JMP DONETIME
+[ 777]    08D1:                                       CHECKMINUTE01:
+[ 778]    08D1: 80 3E BA 10 01                        CMP MINUTE, 1
+[ 779]    08D6: 7C 08                                 JL ISSECOND01
+[ 780]    08D8: C6 06 BD 10 31                        MOV MINUTE2, '1'
+[ 781]    08DD: E9 71 01                              JMP DONETIME
+[ 782]    08E0:                                       ISSECOND01:
+[ 783]    08E0: C6 06 C2 10 31                        MOV SECOND2, '1'
+[ 784]    08E5: E9 69 01                              JMP DONETIME
+[ 785]    08E8:                                       IFFT2:
+[ 786]    08E8: 80 FB 03                              CMP BL, 03H
+[ 787]    08EB: 7D 2A                                 JGE IFFT3
+[ 788]    08ED: A0 95 10                              MOV AL, LINE2
+[ 789]    08F0: EE                                    OUT DX, AL
+[ 790]    08F1: 80 3E B5 10 01                        CMP HOUR, 1
+[ 791]    08F6: 7C 08                                 JL CHECKMINUTE02
+[ 792]    08F8: C6 06 B8 10 32                        MOV HOUR2, '2'
+[ 793]    08FD: E9 51 01                              JMP DONETIME
+[ 794]    0900:                                       CHECKMINUTE02:
+[ 795]    0900: 80 3E BA 10 01                        CMP MINUTE, 1
+[ 796]    0905: 7C 08                                 JL ISSECOND02
+[ 797]    0907: C6 06 BD 10 32                        MOV MINUTE2, '2'
+[ 798]    090C: E9 42 01                              JMP DONETIME
+[ 799]    090F:                                       ISSECOND02:
+[ 800]    090F: C6 06 C2 10 32                        MOV SECOND2, '2'
+[ 801]    0914: E9 3A 01                              JMP DONETIME
+[ 802]    0917:                                       IFFT3:
+[ 803]    0917: 80 FB 04                              CMP BL, 04H
+[ 804]    091A: 7D 2A                                 JGE IFFT4
+[ 805]    091C: A0 96 10                              MOV AL, LINE3
+[ 806]    091F: EE                                    OUT DX, AL
+[ 807]    0920: 80 3E B5 10 01                        CMP HOUR, 1
+[ 808]    0925: 7C 08                                 JL CHECKMINUTE03
+[ 809]    0927: C6 06 B8 10 33                        MOV HOUR2, '3'
+[ 810]    092C: E9 22 01                              JMP DONETIME
+[ 811]    092F:                                       CHECKMINUTE03:
+[ 812]    092F: 80 3E BA 10 01                        CMP MINUTE, 1
+[ 813]    0934: 7C 08                                 JL ISSECOND03
+[ 814]    0936: C6 06 BD 10 33                        MOV MINUTE2, '3'
+[ 815]    093B: E9 13 01                              JMP DONETIME
+[ 816]    093E:                                       ISSECOND03:
+[ 817]    093E: C6 06 C2 10 33                        MOV SECOND2, '3'
+[ 818]    0943: E9 0B 01                              JMP DONETIME
+[ 819]    0946:                                       IFFT4:
+[ 820]    0946: 80 FB 05                              CMP BL, 05H
+[ 821]    0949: 7D 2A                                 JGE IFFT5
+[ 822]    094B: A0 97 10                              MOV AL, LINE4
+[ 823]    094E: EE                                    OUT DX, AL
+[ 824]    094F: 80 3E B5 10 01                        CMP HOUR, 1
+[ 825]    0954: 7C 08                                 JL CHECKMINUTE04
+[ 826]    0956: C6 06 B8 10 34                        MOV HOUR2, '4'
+[ 827]    095B: E9 F3 00                              JMP DONETIME
+[ 828]    095E:                                       CHECKMINUTE04:
+[ 829]    095E: 80 3E BA 10 01                        CMP MINUTE, 1
+[ 830]    0963: 7C 08                                 JL ISSECOND04
+[ 831]    0965: C6 06 BD 10 34                        MOV MINUTE2, '4'
+[ 832]    096A: E9 E4 00                              JMP DONETIME
+[ 833]    096D:                                       ISSECOND04:
+[ 834]    096D: C6 06 C2 10 34                        MOV SECOND2, '4'
+[ 835]    0972: E9 DC 00                              JMP DONETIME
+[ 836]    0975:                                       IFFT5:
+[ 837]    0975: 80 FB 06                              CMP BL, 06H
+[ 838]    0978: 7D 2A                                 JGE IFFT6
+[ 839]    097A: A0 98 10                              MOV AL, LINE5
+[ 840]    097D: EE                                    OUT DX, AL
+[ 841]    097E: 80 3E B5 10 01                        CMP HOUR, 1
+[ 842]    0983: 7C 08                                 JL CHECKMINUTE05
+[ 843]    0985: C6 06 B8 10 35                        MOV HOUR2, '5'
+[ 844]    098A: E9 C4 00                              JMP DONETIME
+[ 845]    098D:                                       CHECKMINUTE05:
+[ 846]    098D: 80 3E BA 10 01                        CMP MINUTE, 1
+[ 847]    0992: 7C 08                                 JL ISSECOND05
+[ 848]    0994: C6 06 BD 10 35                        MOV MINUTE2, '5'
+[ 849]    0999: E9 B5 00                              JMP DONETIME
+[ 850]    099C:                                       ISSECOND05:
+[ 851]    099C: C6 06 C2 10 35                        MOV SECOND2, '5'
+[ 852]    09A1: E9 AD 00                              JMP DONETIME
+[ 853]    09A4:                                       IFFT6:
+[ 854]    09A4: 80 FB 07                              CMP BL, 07H
+[ 855]    09A7: 7D 29                                 JGE IFFT7
+[ 856]    09A9: A0 99 10                              MOV AL, LINE6
+[ 857]    09AC: EE                                    OUT DX, AL
+[ 858]    09AD: 80 3E B5 10 01                        CMP HOUR, 1
+[ 859]    09B2: 7C 08                                 JL CHECKMINUTE06
+[ 860]    09B4: C6 06 B8 10 36                        MOV HOUR2, '6'
+[ 861]    09B9: E9 95 00                              JMP DONETIME
+[ 862]    09BC:                                       CHECKMINUTE06:
+[ 863]    09BC: 80 3E BA 10 01                        CMP MINUTE, 1
+[ 864]    09C1: 7C 08                                 JL ISSECOND06
+[ 865]    09C3: C6 06 BD 10 36                        MOV MINUTE2, '6'
+[ 866]    09C8: E9 86 00                              JMP DONETIME
+[ 867]    09CB:                                       ISSECOND06:
+[ 868]    09CB: C6 06 C2 10 36                        MOV SECOND2, '6'
+[ 869]    09D0: EB 7F                                 JMP DONETIME
+[ 870]    09D2:                                       IFFT7:
+[ 871]    09D2: 80 FB 08                              CMP BL, 08H
+[ 872]    09D5: 7D 27                                 JGE IFFT8
+[ 873]    09D7: A0 9A 10                              MOV AL, LINE7
+[ 874]    09DA: EE                                    OUT DX, AL
+[ 875]    09DB: 80 3E B5 10 01                        CMP HOUR, 1
+[ 876]    09E0: 7C 07                                 JL CHECKMINUTE07
+[ 877]    09E2: C6 06 B8 10 37                        MOV HOUR2, '7'
+[ 878]    09E7: EB 68                                 JMP DONETIME
+[ 879]    09E9:                                       CHECKMINUTE07:
+[ 880]    09E9: 80 3E BA 10 01                        CMP MINUTE, 1
+[ 881]    09EE: 7C 07                                 JL ISSECOND07
+[ 882]    09F0: C6 06 BD 10 37                        MOV MINUTE2, '7'
+[ 883]    09F5: EB 5A                                 JMP DONETIME
+[ 884]    09F7:                                       ISSECOND07:
+[ 885]    09F7: C6 06 C2 10 37                        MOV SECOND2, '7'
+[ 886]    09FC: EB 53                                 JMP DONETIME
+[ 887]    09FE:                                       IFFT8:
+[ 888]    09FE: 80 FB 09                              CMP BL, 09H
+[ 889]    0A01: 7D 27                                 JGE IFFT9
+[ 890]    0A03: A0 9B 10                              MOV AL, LINE8
+[ 891]    0A06: EE                                    OUT DX, AL
+[ 892]    0A07: 80 3E B5 10 01                        CMP HOUR, 1
+[ 893]    0A0C: 7C 07                                 JL CHECKMINUTE08
+[ 894]    0A0E: C6 06 B8 10 38                        MOV HOUR2, '8'
+[ 895]    0A13: EB 3C                                 JMP DONETIME
+[ 896]    0A15:                                       CHECKMINUTE08:
+[ 897]    0A15: 80 3E BA 10 01                        CMP MINUTE, 1
+[ 898]    0A1A: 7C 07                                 JL ISSECOND08
+[ 899]    0A1C: C6 06 BD 10 38                        MOV MINUTE2, '8'
+[ 900]    0A21: EB 2E                                 JMP DONETIME
+[ 901]    0A23:                                       ISSECOND08:
+[ 902]    0A23: C6 06 C2 10 38                        MOV SECOND2, '8'
+[ 903]    0A28: EB 27                                 JMP DONETIME
+[ 904]    0A2A:                                       IFFT9:
+[ 905]    0A2A: A0 9C 10                              MOV AL, LINE9
+[ 906]    0A2D: EE                                    OUT DX, AL
+[ 907]    0A2E: 80 3E B5 10 01                        CMP HOUR, 1
+[ 908]    0A33: 7C 07                                 JL CHECKMINUTE09
+[ 909]    0A35: C6 06 B8 10 39                        MOV HOUR2, '9'
+[ 910]    0A3A: EB 15                                 JMP DONETIME
+[ 911]    0A3C:                                       CHECKMINUTE09:
+[ 912]    0A3C: 80 3E BA 10 01                        CMP MINUTE, 1
+[ 913]    0A41: 7C 07                                 JL ISSECOND09
+[ 914]    0A43: C6 06 BD 10 39                        MOV MINUTE2, '9'
+[ 915]    0A48: EB 07                                 JMP DONETIME
+[ 916]    0A4A:                                       ISSECOND09:
+[ 917]    0A4A: C6 06 C2 10 39                        MOV SECOND2, '9'
+[ 918]    0A4F: EB 00                                 JMP DONETIME
+[ 919]        :                                       
+[ 920]    0A51:                                       DONETIME:
+[ 921]    0A51: C3                                    RET
+[ 922]        :                                       DISPLAYTIME ENDP
+[ 923]        :                                       
+[ 924]    0A52:                                       CHECKTIME PROC
+[ 925]    0A52: BA 40 20                              MOV DX, 2040H
+[ 926]    0A55: BE 00 00                              MOV SI, 0
+[ 927]    0A58: B9 30 00                              MOV CX, 48
+[ 928]    0A5B: 83 FB 05                              CMP BX, 0005H
+[ 929]    0A5E: 74 2C                                 JE ISMORNING
+[ 930]    0A60: 81 FB 01 01                           CMP BX, 0101H
+[ 931]    0A64: 7F 67                                 JG IFAFTERNOON
+[ 932]    0A66: 81 FB 01 01                           CMP BX, 0101H
+[ 933]    0A6A: 74 20                                 JE ISMORNING
+[ 934]    0A6C: 80 3E 58 10 01                        CMP REPEAT, 1
+[ 935]    0A71: 75 03 E9 22 01                        JE SET
+[ 936]    0A76:                                       NEXTLCDA2:
+[ 937]    0A76: 8A 84 66 0F                           MOV AL, MESSAGE1[SI]
+[ 938]    0A7A: EE                                    OUT DX, AL
+[ 939]    0A7B: 46                                    INC SI
+[ 940]    0A7C: 42                                    INC DX
+[ 941]    0A7D: E2 F7                                 LOOP NEXTLCDA2
+[ 942]    0A7F: C6 06 58 10 01                        MOV REPEAT, 1
+[ 943]    0A84: C6 06 5A 10 00                        MOV ISWATERED, 0
+[ 944]    0A89: E9 0C 01                              JMP SET
+[ 945]    0A8C:                                       ISMORNING:
+[ 946]    0A8C: 80 3E 58 10 00                        CMP REPEAT, 0
+[ 947]    0A91: 75 03 E9 02 01                        JE SET
+[ 948]    0A96: E8 00 01                              CALL SETTIME
+[ 949]    0A99: BA 40 20                              MOV DX, 2040H
+[ 950]    0A9C: BE 00 00                              MOV SI, 0
+[ 951]    0A9F: B9 30 00                              MOV CX, 48
+[ 952]    0AA2:                                       NEXTLCDA1:
+[ 953]    0AA2: 8A 84 F6 0F                           MOV AL, MESSAGEn[SI]
+[ 954]    0AA6: EE                                    OUT DX, AL
+[ 955]    0AA7: 46                                    INC SI
+[ 956]    0AA8: 42                                    INC DX
+[ 957]    0AA9: E2 F7                                 LOOP NEXTLCDA1
+[ 958]    0AAB: E8 1C 01                              CALL DISPLAYLED
+[ 959]    0AAE: BA 40 20                              MOV DX, 2040H
+[ 960]    0AB1: BE 00 00                              MOV SI, 0
+[ 961]    0AB4: B9 30 00                              MOV CX, 48
+[ 962]    0AB7:                                       NEXTLCDA3:
+[ 963]    0AB7: 8A 84 66 0F                           MOV AL, MESSAGE1[SI]
+[ 964]    0ABB: EE                                    OUT DX, AL
+[ 965]    0ABC: 46                                    INC SI
+[ 966]    0ABD: 42                                    INC DX
+[ 967]    0ABE: E2 F7                                 LOOP NEXTLCDA3
+[ 968]    0AC0: C6 06 5A 10 01                        MOV ISWATERED, 1
+[ 969]    0AC5: C6 06 58 10 00                        MOV REPEAT, 0
+[ 970]    0ACA: E9 CB 00                              JMP SET
+[ 971]    0ACD:                                       IFAFTERNOON:
+[ 972]    0ACD: 81 FB 07 01                           CMP BX, 0107H
+[ 973]    0AD1: 7F 66                                 JG IFEVENING
+[ 974]    0AD3: 81 FB 07 01                           CMP BX,0107H
+[ 975]    0AD7: 74 20                                 JE ISAFTERNOON
+[ 976]    0AD9: 80 3E 58 10 01                        CMP REPEAT, 1
+[ 977]    0ADE: 75 03 E9 B5 00                        JE SET
+[ 978]    0AE3:                                       NEXTLCDB2:
+[ 979]    0AE3: 8A 84 96 0F                           MOV AL, MESSAGE2[SI]
+[ 980]    0AE7: EE                                    OUT DX, AL
+[ 981]    0AE8: 46                                    INC SI
+[ 982]    0AE9: 42                                    INC DX
+[ 983]    0AEA: E2 F7                                 LOOP NEXTLCDB2
+[ 984]    0AEC: C6 06 58 10 01                        MOV REPEAT, 1
+[ 985]    0AF1: C6 06 5A 10 00                        MOV ISWATERED, 0
+[ 986]    0AF6: E9 9F 00                              JMP SET
+[ 987]    0AF9:                                       ISAFTERNOON:
+[ 988]    0AF9: 80 3E 58 10 00                        CMP REPEAT, 0
+[ 989]    0AFE: 75 03 E9 95 00                        JE SET
+[ 990]    0B03: E8 93 00                              CALL SETTIME
+[ 991]    0B06: BA 40 20                              MOV DX, 2040H
+[ 992]    0B09: BE 00 00                              MOV SI, 0
+[ 993]    0B0C: B9 30 00                              MOV CX, 48
+[ 994]    0B0F:                                       NEXTLCDB1:
+[ 995]    0B0F: 8A 84 F6 0F                           MOV AL, MESSAGEn[SI]
+[ 996]    0B13: EE                                    OUT DX, AL
+[ 997]    0B14: 46                                    INC SI
+[ 998]    0B15: 42                                    INC DX
+[ 999]    0B16: E2 F7                                 LOOP NEXTLCDB1
+[1000]    0B18: E8 AF 00                              CALL DISPLAYLED
+[1001]    0B1B: BA 40 20                              MOV DX, 2040H
+[1002]    0B1E: BE 00 00                              MOV SI, 0
+[1003]    0B21: B9 30 00                              MOV CX, 48
+[1004]    0B24:                                       NEXTLCDB3:
+[1005]    0B24: 8A 84 96 0F                           MOV AL, MESSAGE2[SI]
+[1006]    0B28: EE                                    OUT DX, AL
+[1007]    0B29: 46                                    INC SI
+[1008]    0B2A: 42                                    INC DX
+[1009]    0B2B: E2 F7                                 LOOP NEXTLCDB3
+[1010]    0B2D: C6 06 5A 10 01                        MOV ISWATERED, 1
+[1011]    0B32: C6 06 58 10 00                        MOV REPEAT, 0
+[1012]    0B37: EB 5F                                 JMP SET
+[1013]    0B39:                                       IFEVENING:
+[1014]    0B39: 81 FB 03 02                           CMP BX, 0203H
+[1015]    0B3D: 74 1C                                 JE ISEVENING
+[1016]    0B3F: 80 3E 58 10 01                        CMP REPEAT, 1
+[1017]    0B44: 74 52                                 JE SET
+[1018]    0B46:                                       NEXTLCDC2:
+[1019]    0B46: 8A 84 C6 0F                           MOV AL, MESSAGE3[SI]
+[1020]    0B4A: EE                                    OUT DX, AL
+[1021]    0B4B: 46                                    INC SI
+[1022]    0B4C: 42                                    INC DX
+[1023]    0B4D: E2 F7                                 LOOP NEXTLCDC2
+[1024]    0B4F: C6 06 58 10 01                        MOV REPEAT, 1
+[1025]    0B54: C6 06 5A 10 00                        MOV ISWATERED, 0
+[1026]    0B59: EB 3D                                 JMP SET
+[1027]    0B5B:                                       ISEVENING:
+[1028]    0B5B: 80 3E 58 10 00                        CMP REPEAT, 0
+[1029]    0B60: 74 36                                 JE SET
+[1030]    0B62: E8 34 00                              CALL SETTIME
+[1031]    0B65: BA 40 20                              MOV DX, 2040H
+[1032]    0B68: BE 00 00                              MOV SI, 0
+[1033]    0B6B: B9 30 00                              MOV CX, 48
+[1034]    0B6E:                                       NEXTLCDC1:
+[1035]    0B6E: 8A 84 F6 0F                           MOV AL, MESSAGEn[SI]
+[1036]    0B72: EE                                    OUT DX, AL
+[1037]    0B73: 46                                    INC SI
+[1038]    0B74: 42                                    INC DX
+[1039]    0B75: E2 F7                                 LOOP NEXTLCDC1
+[1040]    0B77: E8 50 00                              CALL DISPLAYLED
+[1041]    0B7A: BA 40 20                              MOV DX, 2040H
+[1042]    0B7D: BE 00 00                              MOV SI, 0
+[1043]    0B80: B9 30 00                              MOV CX, 48
+[1044]    0B83:                                       NEXTLCDC3:
+[1045]    0B83: 8A 84 C6 0F                           MOV AL, MESSAGE3[SI]
+[1046]    0B87: EE                                    OUT DX, AL
+[1047]    0B88: 46                                    INC SI
+[1048]    0B89: 42                                    INC DX
+[1049]    0B8A: E2 F7                                 LOOP NEXTLCDC3
+[1050]    0B8C: C6 06 5A 10 01                        MOV ISWATERED, 1
+[1051]    0B91: C6 06 58 10 00                        MOV REPEAT, 0
+[1052]    0B96: EB 00                                 JMP SET
+[1053]    0B98:                                       SET:
+[1054]    0B98: C3                                    RET
+[1055]        :                                       CHECKTIME ENDP
+[1056]        :                                       
+[1057]    0B99:                                       SETTIME PROC
+[1058]    0B99: BA 32 20                              MOV DX, 2032H
+[1059]    0B9C: A0 9D 10                              MOV AL, LINEn
+[1060]    0B9F: EE                                    OUT DX, AL
+[1061]        :                                       
+[1062]    0BA0: BA 33 20                              MOV DX, 2033H
+[1063]    0BA3: BE 00 00                              MOV SI, 0
+[1064]    0BA6: B9 02 00                              MOV CX, 2
+[1065]    0BA9:                                       RESETTIME1:
+[1066]    0BA9: A0 93 10                              MOV AL, LINE0
+[1067]    0BAC: EE                                    OUT DX, AL
+[1068]    0BAD: 42                                    INC DX
+[1069]    0BAE: 46                                    INC SI
+[1070]    0BAF: E2 F8                                 LOOP RESETTIME1
+[1071]        :                                       
+[1072]    0BB1: BA 32 20                              MOV DX, 2032H
+[1073]    0BB4: A0 9D 10                              MOV AL, LINEn
+[1074]    0BB7: EE                                    OUT DX, AL
+[1075]        :                                       
+[1076]    0BB8: BA 36 20                              MOV DX, 2036H
+[1077]    0BBB: BE 00 00                              MOV SI, 0
+[1078]    0BBE: B9 02 00                              MOV CX, 2
+[1079]    0BC1:                                       RESETTIME2:
+[1080]    0BC1: A0 93 10                              MOV AL, LINE0
+[1081]    0BC4: EE                                    OUT DX, AL
+[1082]    0BC5: 42                                    INC DX
+[1083]    0BC6: 46                                    INC SI
+[1084]    0BC7: E2 F8                                 LOOP RESETTIME2
+[1085]    0BC9: C3                                    RET
+[1086]        :                                       SETTIME ENDP
+[1087]        :                                       
+[1088]    0BCA:                                       DISPLAYLED PROC
+[1089]    0BCA: BA 70 20                              MOV DX, 2070H
+[1090]    0BCD: B0 00                                 MOV AL, 00000000B
+[1091]    0BCF: EE                                    OUT DX, AL
+[1092]    0BD0: B0 80                                 MOV AL, 10000000B
+[1093]    0BD2: EE                                    OUT DX, AL
+[1094]    0BD3: E8 BA 00                              CALL INTERVAL
+[1095]    0BD6: BA 70 20                              MOV DX, 2070H
+[1096]    0BD9: B8 C0 00                              MOV AX, 11000000B
+[1097]    0BDC: EE                                    OUT DX, AL
+[1098]    0BDD: E8 B0 00                              CALL INTERVAL
+[1099]    0BE0: BA 70 20                              MOV DX, 2070H
+[1100]    0BE3: B8 E0 00                              MOV AX, 11100000B
+[1101]    0BE6: EE                                    OUT DX, AL
+[1102]    0BE7: E8 A6 00                              CALL INTERVAL
+[1103]    0BEA: BA 70 20                              MOV DX, 2070H
+[1104]    0BED: B8 F0 00                              MOV AX, 11110000B
+[1105]    0BF0: EE                                    OUT DX, AL
+[1106]    0BF1: E8 9C 00                              CALL INTERVAL
+[1107]    0BF4: BA 70 20                              MOV DX, 2070H
+[1108]    0BF7: B8 F8 00                              MOV AX, 11111000B
+[1109]    0BFA: EE                                    OUT DX, AL
+[1110]    0BFB: E8 92 00                              CALL INTERVAL
+[1111]    0BFE: BA 70 20                              MOV DX, 2070H
+[1112]    0C01: B8 FC 00                              MOV AX, 11111100B
+[1113]    0C04: EE                                    OUT DX, AL
+[1114]    0C05: E8 88 00                              CALL INTERVAL
+[1115]    0C08: BA 70 20                              MOV DX, 2070H
+[1116]    0C0B: B8 FE 00                              MOV AX, 11111110B
+[1117]    0C0E: EE                                    OUT DX, AL
+[1118]    0C0F: E8 7E 00                              CALL INTERVAL
+[1119]    0C12: BA 70 20                              MOV DX, 2070H
+[1120]    0C15: B8 FF 00                              MOV AX, 11111111B
+[1121]    0C18: EE                                    OUT DX, AL
+[1122]    0C19: E8 74 00                              CALL INTERVAL
+[1123]    0C1C: BA 70 20                              MOV DX, 2070H
+[1124]    0C1F: B8 7F 00                              MOV AX, 01111111B
+[1125]    0C22: EE                                    OUT DX, AL
+[1126]    0C23: E8 6A 00                              CALL INTERVAL
+[1127]    0C26: BA 70 20                              MOV DX, 2070H
+[1128]    0C29: B0 3F                                 MOV AL, 00111111B
+[1129]    0C2B: EE                                    OUT DX, AL
+[1130]    0C2C: E8 61 00                              CALL INTERVAL
+[1131]    0C2F: BA 70 20                              MOV DX, 2070H
+[1132]    0C32: B0 1F                                 MOV AL, 00011111B
+[1133]    0C34: EE                                    OUT DX, AL
+[1134]    0C35: E8 58 00                              CALL INTERVAL
+[1135]    0C38: BA 70 20                              MOV DX, 2070H
+[1136]    0C3B: B0 0F                                 MOV AL, 00001111B
+[1137]    0C3D: EE                                    OUT DX, AL
+[1138]    0C3E: E8 4F 00                              CALL INTERVAL
+[1139]    0C41: BA 70 20                              MOV DX, 2070H
+[1140]    0C44: B0 07                                 MOV AL, 00000111B
+[1141]    0C46: EE                                    OUT DX, AL
+[1142]    0C47: E8 46 00                              CALL INTERVAL
+[1143]    0C4A: BA 70 20                              MOV DX, 2070H
+[1144]    0C4D: B0 03                                 MOV AL, 00000011B
+[1145]    0C4F: EE                                    OUT DX, AL
+[1146]    0C50: E8 3D 00                              CALL INTERVAL
+[1147]    0C53: BA 70 20                              MOV DX, 2070H
+[1148]    0C56: B0 01                                 MOV AL, 00000001B
+[1149]    0C58: EE                                    OUT DX, AL
+[1150]    0C59: E8 34 00                              CALL INTERVAL
+[1151]    0C5C: BA 70 20                              MOV DX, 2070H
+[1152]    0C5F: B0 00                                 MOV AL, 00000000B
+[1153]    0C61: EE                                    OUT DX, AL
+[1154]    0C62: E8 2B 00                              CALL INTERVAL
+[1155]    0C65: BA 70 20                              MOV DX, 2070H
+[1156]    0C68: B0 04                                 MOV AL, 00000100B
+[1157]    0C6A: EE                                    OUT DX, AL
+[1158]    0C6B: E8 22 00                              CALL INTERVAL
+[1159]    0C6E: BA 70 20                              MOV DX, 2070H
+[1160]    0C71: B0 0C                                 MOV AL, 00001100B
+[1161]    0C73: EE                                    OUT DX, AL
+[1162]    0C74: E8 19 00                              CALL INTERVAL
+[1163]    0C77: BA 70 20                              MOV DX, 2070H
+[1164]    0C7A: B0 1C                                 MOV AL, 00011100B
+[1165]    0C7C: EE                                    OUT DX, AL
+[1166]    0C7D: E8 10 00                              CALL INTERVAL
+[1167]    0C80: BA 70 20                              MOV DX, 2070H
+[1168]    0C83: B0 3C                                 MOV AL, 00111100B
+[1169]    0C85: EE                                    OUT DX, AL
+[1170]    0C86: E8 07 00                              CALL INTERVAL
+[1171]    0C89: BA 70 20                              MOV DX, 2070H
+[1172]    0C8C: B0 00                                 MOV AL, 00000000B
+[1173]    0C8E: EE                                    OUT DX, AL
+[1174]    0C8F: C3                                    RET
+[1175]        :                                       DISPLAYLED ENDP
+[1176]        :                                       
+[1177]    0C90:                                       INTERVAL PROC
+[1178]        :                                       ;1 SEC0ND INTERVAL
+[1179]    0C90: B9 0F 00                              MOV CX, 0FH
+[1180]    0C93: BA 40 42                              MOV DX, 4240H
+[1181]    0C96: B4 86                                 MOV AH, 86H
+[1182]    0C98: CD 15                                 INT 15H
+[1183]    0C9A: E8 4E 02                              CALL CHECKTEMP
+[1184]    0C9D: C3                                    RET
+[1185]        :                                       INTERVAL ENDP
+[1186]        :                                       
+[1187]    0C9E:                                       SAVELOGS PROC
+[1188]    0C9E: E8 4A 02                              CALL CHECKTEMP
+[1189]    0CA1: B8 00 00                              MOV AX, 0
+[1190]    0CA4: A0 9F 10                              MOV AL, [DAY1]
+[1191]    0CA7: E6 82                                 OUT 130D, AL
+[1192]    0CA9:                                       WAITA:
+[1193]    0CA9: E4 82                                 IN AL, 130D
+[1194]    0CAB: 0C 00                                 OR AL, 0
+[1195]    0CAD: 75 FA                                 JNZ WAITA
+[1196]    0CAF: B8 00 00                              MOV AX, 0
+[1197]    0CB2: A0 A1 10                              MOV AL, [DAY2]
+[1198]    0CB5: E6 82                                 OUT 130D, AL
+[1199]    0CB7:                                       WAITB:
+[1200]    0CB7: E4 82                                 IN AL, 130D
+[1201]    0CB9: 0C 00                                 OR AL, 0
+[1202]    0CBB: 75 FA                                 JNZ WAITB
+[1203]    0CBD: A0 AD 10                              MOV AL, [DDATE]
+[1204]    0CC0: E6 82                                 OUT 130D, AL
+[1205]    0CC2:                                       WAITC:
+[1206]    0CC2: E4 82                                 IN AL, 130D
+[1207]    0CC4: 0C 00                                 OR AL, 0
+[1208]    0CC6: 75 FA                                 JNZ WAITC
+[1209]    0CC8: E8 20 02                              CALL CHECKTEMP
+[1210]    0CCB: B8 00 00                              MOV AX, 0
+[1211]    0CCE: A0 A4 10                              MOV AL, [MONTH1]
+[1212]    0CD1: E6 82                                 OUT 130D, AL
+[1213]    0CD3:                                       WAITD:
+[1214]    0CD3: E4 82                                 IN AL, 130D
+[1215]    0CD5: 0C 00                                 OR AL, 0
+[1216]    0CD7: 75 FA                                 JNZ WAITD
+[1217]    0CD9: B8 00 00                              MOV AX, 0
+[1218]    0CDC: A0 A6 10                              MOV AL, [MONTH2]
+[1219]    0CDF: E6 82                                 OUT 130D, AL
+[1220]    0CE1:                                       WAITE:
+[1221]    0CE1: E4 82                                 IN AL, 130D
+[1222]    0CE3: 0C 00                                 OR AL, 0
+[1223]    0CE5: 75 FA                                 JNZ WAITE
+[1224]    0CE7: B8 00 00                              MOV AX, 0
+[1225]    0CEA: A0 AD 10                              MOV AL, [DDATE]
+[1226]    0CED: E6 82                                 OUT 130D, AL
+[1227]    0CEF:                                       WAITF:
+[1228]    0CEF: E4 82                                 IN AL, 130D
+[1229]    0CF1: 0C 00                                 OR AL, 0
+[1230]    0CF3: 75 FA                                 JNZ WAITF
+[1231]    0CF5: E8 F3 01                              CALL CHECKTEMP
+[1232]    0CF8: B8 00 00                              MOV AX, 0
+[1233]    0CFB: A0 A9 10                              MOV AL, [YEAR1]
+[1234]    0CFE: E6 82                                 OUT 130D, AL
+[1235]    0D00:                                       WAITG:
+[1236]    0D00: E4 82                                 IN AL, 130D
+[1237]    0D02: 0C 00                                 OR AL, 0
+[1238]    0D04: 75 FA                                 JNZ WAITG
+[1239]    0D06: B8 00 00                              MOV AX, 0
+[1240]    0D09: A0 AB 10                              MOV AL, [YEAR2]
+[1241]    0D0C: E6 82                                 OUT 130D, AL
+[1242]    0D0E:                                       WAITH:
+[1243]    0D0E: E4 82                                 IN AL, 130D
+[1244]    0D10: 0C 00                                 OR AL, 0
+[1245]    0D12: 75 FA                                 JNZ WAITH
+[1246]    0D14: E8 D4 01                              CALL CHECKTEMP
+[1247]    0D17: BB AF 10                              LEA BX, SSPACE
+[1248]    0D1A: B9 05 00                              MOV CX, 5
+[1249]    0D1D: B8 00 00                              MOV AX, 0
+[1250]    0D20:                                       PUTCHARC:
+[1251]    0D20: 8A 07                                 MOV AL, [BX]
+[1252]    0D22: E6 82                                 OUT 130D, AL
+[1253]    0D24: 43                                    INC BX
+[1254]    0D25:                                       WAITI:
+[1255]    0D25: E4 82                                 IN AL, 130D
+[1256]    0D27: 0C 00                                 OR AL, 0
+[1257]    0D29: 75 FA                                 JNZ WAITI
+[1258]    0D2B: E2 F3                                 LOOP PUTCHARC
+[1259]        :                                       
+[1260]    0D2D: E8 BB 01                              CALL CHECKTEMP
+[1261]    0D30: B8 00 00                              MOV AX, 0
+[1262]    0D33: A0 B6 10                              MOV AL, [HOUR1]
+[1263]    0D36: E6 82                                 OUT 130D, AL
+[1264]    0D38:                                       WAIT1:
+[1265]    0D38: E4 82                                 IN AL, 130D
+[1266]    0D3A: 0C 00                                 OR AL, 0
+[1267]    0D3C: 75 FA                                 JNZ WAIT1
+[1268]    0D3E: B8 00 00                              MOV AX, 0
+[1269]    0D41: A0 B8 10                              MOV AL, [HOUR2]
+[1270]    0D44: E6 82                                 OUT 130D, AL
+[1271]    0D46:                                       WAIT2:
+[1272]    0D46: E4 82                                 IN AL, 130D
+[1273]    0D48: 0C 00                                 OR AL, 0
+[1274]    0D4A: 75 FA                                 JNZ WAIT2
+[1275]    0D4C: B8 00 00                              MOV AX, 0
+[1276]    0D4F: A0 C4 10                              MOV AL, [TTIME]
+[1277]    0D52: E6 82                                 OUT 130D, AL
+[1278]    0D54:                                       WAIT3:
+[1279]    0D54: E4 82                                 IN AL, 130D
+[1280]    0D56: 0C 00                                 OR AL, 0
+[1281]    0D58: 75 FA                                 JNZ WAIT3
+[1282]    0D5A: E8 8E 01                              CALL CHECKTEMP
+[1283]    0D5D: B8 00 00                              MOV AX, 0
+[1284]    0D60: A0 BB 10                              MOV AL, [MINUTE1]
+[1285]    0D63: E6 82                                 OUT 130D, AL
+[1286]    0D65: 43                                    INC BX
+[1287]    0D66:                                       WAIT4:
+[1288]    0D66: E4 82                                 IN AL, 130D
+[1289]    0D68: 0C 00                                 OR AL, 0
+[1290]    0D6A: 75 FA                                 JNZ WAIT4
+[1291]    0D6C: B8 00 00                              MOV AX, 0
+[1292]    0D6F: A0 BD 10                              MOV AL, [MINUTE2]
+[1293]    0D72: E6 82                                 OUT 130D, AL
+[1294]    0D74:                                       WAIT5:
+[1295]    0D74: E4 82                                 IN AL, 130D
+[1296]    0D76: 0C 00                                 OR AL, 0
+[1297]    0D78: 75 FA                                 JNZ WAIT5
+[1298]    0D7A: B8 00 00                              MOV AX, 0
+[1299]    0D7D: A0 C4 10                              MOV AL, [TTIME]
+[1300]    0D80: E6 82                                 OUT 130D, AL
+[1301]    0D82:                                       WAIT6:
+[1302]    0D82: E4 82                                 IN AL, 130D
+[1303]    0D84: 0C 00                                 OR AL, 0
+[1304]    0D86: 75 FA                                 JNZ WAIT6
+[1305]    0D88: E8 60 01                              CALL CHECKTEMP
+[1306]    0D8B: B8 00 00                              MOV AX, 0
+[1307]    0D8E: A0 C0 10                              MOV AL, [SECOND1]
+[1308]    0D91: E6 82                                 OUT 130D, AL
+[1309]    0D93:                                       WAIT7:
+[1310]    0D93: E4 82                                 IN AL, 130D
+[1311]    0D95: 0C 00                                 OR AL, 0
+[1312]    0D97: 75 FA                                 JNZ WAIT7
+[1313]    0D99: B8 00 00                              MOV AX, 0
+[1314]    0D9C: A0 C2 10                              MOV AL, [SECOND2]
+[1315]    0D9F: E6 82                                 OUT 130D, AL
+[1316]    0DA1:                                       WAIT8:
+[1317]    0DA1: E4 82                                 IN AL, 130D
+[1318]    0DA3: 0C 00                                 OR AL, 0
+[1319]    0DA5: 75 FA                                 JNZ WAIT8
+[1320]        :                                       
+[1321]    0DA7: BB AF 10                              LEA BX, SSPACE
+[1322]    0DAA: B9 05 00                              MOV CX, 5
+[1323]    0DAD: B8 00 00                              MOV AX, 0
+[1324]    0DB0:                                       PUTCHARD:
+[1325]    0DB0: 8A 07                                 MOV AL, [BX]
+[1326]    0DB2: E6 82                                 OUT 130D, AL
+[1327]    0DB4: 43                                    INC BX
+[1328]    0DB5:                                       WAITJ:
+[1329]    0DB5: E4 82                                 IN AL, 130D
+[1330]    0DB7: 0C 00                                 OR AL, 0
+[1331]    0DB9: 75 FA                                 JNZ WAITJ
+[1332]    0DBB: E2 F3                                 LOOP PUTCHARD
+[1333]        :                                       
+[1334]    0DBD: E8 2B 01                              CALL CHECKTEMP
+[1335]    0DC0: BB C6 10                              LEA BX, SSTATUS
+[1336]    0DC3: B9 0A 00                              MOV CX, 10
+[1337]    0DC6: B8 00 00                              MOV AX, 0
+[1338]    0DC9:                                       PUTCHARE:
+[1339]    0DC9: 8A 07                                 MOV AL, [BX]
+[1340]    0DCB: E6 82                                 OUT 130D, AL
+[1341]    0DCD: 43                                    INC BX
+[1342]    0DCE:                                       WAITK:
+[1343]    0DCE: E4 82                                 IN AL, 130D
+[1344]    0DD0: 0C 00                                 OR AL, 0
+[1345]    0DD2: 75 FA                                 JNZ WAITK
+[1346]    0DD4: E2 F3                                 LOOP PUTCHARE
+[1347]    0DD6: E8 12 01                              CALL CHECKTEMP
+[1348]    0DD9: E8 01 00                              CALL WRITETOFILE
+[1349]    0DDC: C3                                    RET
+[1350]        :                                       SAVELOGS ENDP
+[1351]        :                                       
+[1352]    0DDD:                                       WRITETOFILE PROC
+[1353]    0DDD: B4 40                                 MOV AH, 40H
+[1354]    0DDF: 8B 1E 00 11                           MOV BX, HANDLE
+[1355]    0DE3: BA 9F 10                              MOV DX, OFFSET DAY1
+[1356]    0DE6: B9 01 00                              MOV CX, 1
+[1357]    0DE9: CD 21                                 INT 21H
+[1358]        :                                       
+[1359]    0DEB: B4 40                                 MOV AH, 40H
+[1360]    0DED: 8B 1E 00 11                           MOV BX, HANDLE
+[1361]    0DF1: BA A1 10                              MOV DX, OFFSET DAY2
+[1362]    0DF4: B9 01 00                              MOV CX, 1
+[1363]    0DF7: CD 21                                 INT 21H
+[1364]        :                                       
+[1365]    0DF9: B4 40                                 MOV AH, 40H
+[1366]    0DFB: 8B 1E 00 11                           MOV BX, HANDLE
+[1367]    0DFF: BA AD 10                              MOV DX, OFFSET DDATE
+[1368]    0E02: B9 01 00                              MOV CX, 1
+[1369]    0E05: CD 21                                 INT 21H
+[1370]        :                                       
+[1371]    0E07: B4 40                                 MOV AH, 40H
+[1372]    0E09: 8B 1E 00 11                           MOV BX, HANDLE
+[1373]    0E0D: BA A4 10                              MOV DX, OFFSET MONTH1
+[1374]    0E10: B9 01 00                              MOV CX, 1
+[1375]    0E13: CD 21                                 INT 21H
+[1376]        :                                       
+[1377]    0E15: B4 40                                 MOV AH, 40H
+[1378]    0E17: 8B 1E 00 11                           MOV BX, HANDLE
+[1379]    0E1B: BA A6 10                              MOV DX, OFFSET MONTH2
+[1380]    0E1E: B9 01 00                              MOV CX, 1
+[1381]    0E21: CD 21                                 INT 21H
+[1382]        :                                       
+[1383]    0E23: B4 40                                 MOV AH, 40H
+[1384]    0E25: 8B 1E 00 11                           MOV BX, HANDLE
+[1385]    0E29: BA AD 10                              MOV DX, OFFSET DDATE
+[1386]    0E2C: B9 01 00                              MOV CX, 1
+[1387]    0E2F: CD 21                                 INT 21H
+[1388]        :                                       
+[1389]    0E31: B4 40                                 MOV AH, 40H
+[1390]    0E33: 8B 1E 00 11                           MOV BX, HANDLE
+[1391]    0E37: BA A9 10                              MOV DX, OFFSET YEAR1
+[1392]    0E3A: B9 01 00                              MOV CX, 1
+[1393]    0E3D: CD 21                                 INT 21H
+[1394]        :                                       
+[1395]    0E3F: B4 40                                 MOV AH, 40H
+[1396]    0E41: 8B 1E 00 11                           MOV BX, HANDLE
+[1397]    0E45: BA AB 10                              MOV DX, OFFSET YEAR2
+[1398]    0E48: B9 01 00                              MOV CX, 1
+[1399]    0E4B: CD 21                                 INT 21H
+[1400]        :                                       
+[1401]    0E4D: B4 40                                 MOV AH, 40H
+[1402]    0E4F: 8B 1E 00 11                           MOV BX, HANDLE
+[1403]    0E53: BA AF 10                              MOV DX, OFFSET SSPACE
+[1404]    0E56: B9 05 00                              MOV CX, 5
+[1405]    0E59: CD 21                                 INT 21H
+[1406]        :                                       
+[1407]    0E5B: B4 40                                 MOV AH, 40H
+[1408]    0E5D: 8B 1E 00 11                           MOV BX, HANDLE
+[1409]    0E61: BA B6 10                              MOV DX, OFFSET HOUR1
+[1410]    0E64: B9 01 00                              MOV CX, 1
+[1411]    0E67: CD 21                                 INT 21H
+[1412]        :                                       
+[1413]    0E69: B4 40                                 MOV AH, 40H
+[1414]    0E6B: 8B 1E 00 11                           MOV BX, HANDLE
+[1415]    0E6F: BA B8 10                              MOV DX, OFFSET HOUR2
+[1416]    0E72: B9 01 00                              MOV CX, 1
+[1417]    0E75: CD 21                                 INT 21H
+[1418]        :                                       
+[1419]    0E77: B4 40                                 MOV AH, 40H
+[1420]    0E79: 8B 1E 00 11                           MOV BX, HANDLE
+[1421]    0E7D: BA C4 10                              MOV DX, OFFSET TTIME
+[1422]    0E80: B9 01 00                              MOV CX, 1
+[1423]    0E83: CD 21                                 INT 21H
+[1424]        :                                       
+[1425]    0E85: B4 40                                 MOV AH, 40H
+[1426]    0E87: 8B 1E 00 11                           MOV BX, HANDLE
+[1427]    0E8B: BA BB 10                              MOV DX, OFFSET MINUTE1
+[1428]    0E8E: B9 01 00                              MOV CX, 1
+[1429]    0E91: CD 21                                 INT 21H
+[1430]        :                                       
+[1431]    0E93: B4 40                                 MOV AH, 40H
+[1432]    0E95: 8B 1E 00 11                           MOV BX, HANDLE
+[1433]    0E99: BA BD 10                              MOV DX, OFFSET MINUTE2
+[1434]    0E9C: B9 01 00                              MOV CX, 1
+[1435]    0E9F: CD 21                                 INT 21H
+[1436]        :                                       
+[1437]    0EA1: B4 40                                 MOV AH, 40H
+[1438]    0EA3: 8B 1E 00 11                           MOV BX, HANDLE
+[1439]    0EA7: BA C4 10                              MOV DX, OFFSET TTIME
+[1440]    0EAA: B9 01 00                              MOV CX, 1
+[1441]    0EAD: CD 21                                 INT 21H
+[1442]        :                                       
+[1443]    0EAF: B4 40                                 MOV AH, 40H
+[1444]    0EB1: 8B 1E 00 11                           MOV BX, HANDLE
+[1445]    0EB5: BA C0 10                              MOV DX, OFFSET SECOND1
+[1446]    0EB8: B9 01 00                              MOV CX, 1
+[1447]    0EBB: CD 21                                 INT 21H
+[1448]        :                                       
+[1449]    0EBD: B4 40                                 MOV AH, 40H
+[1450]    0EBF: 8B 1E 00 11                           MOV BX, HANDLE
+[1451]    0EC3: BA C2 10                              MOV DX, OFFSET SECOND2
+[1452]    0EC6: B9 01 00                              MOV CX, 1
+[1453]    0EC9: CD 21                                 INT 21H
+[1454]        :                                       
+[1455]    0ECB: B4 40                                 MOV AH, 40H
+[1456]    0ECD: 8B 1E 00 11                           MOV BX, HANDLE
+[1457]    0ED1: BA AF 10                              MOV DX, OFFSET SSPACE
+[1458]    0ED4: B9 05 00                              MOV CX, 5
+[1459]    0ED7: CD 21                                 INT 21H
+[1460]        :                                       
+[1461]    0ED9: B4 40                                 MOV AH, 40H
+[1462]    0EDB: 8B 1E 00 11                           MOV BX, HANDLE
+[1463]    0EDF: BA C6 10                              MOV DX, OFFSET SSTATUS
+[1464]    0EE2: B9 0A 00                              MOV CX, 10
+[1465]    0EE5: CD 21                                 INT 21H
+[1466]        :                                       
+[1467]    0EE7: E8 01 00                              CALL CHECKTEMP
+[1468]    0EEA: C3                                    RET
+[1469]        :                                       WRITETOFILE ENDP
+[1470]        :                                       
+[1471]    0EEB:                                       CHECKTEMP PROC
+[1472]    0EEB: E4 7D                                 IN AL, 125
+[1473]    0EED: 3C 15                                 CMP AL, 21
+[1474]    0EEF: 7C 06                                 JL CHANGE1
+[1475]    0EF1: 3C 20                                 CMP AL, 32
+[1476]    0EF3: 7E 70                                 JLE START2
+[1477]    0EF5: 7F 06                                 JG CHANGE2
+[1478]        :                                       
+[1479]    0EF7:                                       CHANGE1:
+[1480]    0EF7: B0 01                                 MOV AL, 1
+[1481]    0EF9: E6 7F                                 OUT 127, AL
+[1482]    0EFB: EB 68                                 JMP START2
+[1483]    0EFD:                                       CHANGE2:
+[1484]    0EFD: B0 00                                 MOV AL, 0
+[1485]    0EFF: E6 7F                                 OUT 127, AL
+[1486]    0F01: E4 7D                                 IN AL, 125
+[1487]    0F03: 3C 28                                 CMP AL, 40
+[1488]    0F05: 7D 02                                 JGE ISHIGH
+[1489]    0F07: EB 5C                                 JMP START2
+[1490]    0F09:                                       ISHIGH:
+[1491]    0F09: B4 2C                                 MOV AH, 2CH
+[1492]    0F0B: CD 21                                 INT 21H
+[1493]    0F0D: 8A C5                                 MOV AL, CH
+[1494]    0F0F: D4 0A                                 AAM
+[1495]    0F11: 8B D8                                 MOV BX, AX
+[1496]    0F13: 81 FB 01 01                           CMP BX, 0101H
+[1497]    0F17: 7C 4C                                 JL START2
+[1498]    0F19: 81 FB 07 01                           CMP BX, 0107H
+[1499]    0F1D: 7F 46                                 JG START2
+[1500]    0F1F: BA 40 20                              MOV DX, 2040H
+[1501]    0F22: BE 00 00                              MOV SI, 0
+[1502]    0F25: B9 30 00                              MOV CX, 48
+[1503]    0F28:                                       NEXTH:
+[1504]    0F28: 8A 84 26 10                           MOV AL, MESSAGEh[SI]
+[1505]    0F2C: EE                                    OUT DX, AL
+[1506]    0F2D: 46                                    INC SI
+[1507]    0F2E: 42                                    INC DX
+[1508]    0F2F: E2 F7                                 LOOP NEXTH
+[1509]    0F31:                                       STILLHIGH:
+[1510]    0F31: BA 70 20                              MOV DX, 2070H
+[1511]    0F34: B0 00                                 MOV AL, 00000000B
+[1512]    0F36: EE                                    OUT DX, AL
+[1513]    0F37: BA 70 20                              MOV DX, 2070H
+[1514]    0F3A: B0 FF                                 MOV AL, 11111111B
+[1515]    0F3C: EE                                    OUT DX, AL
+[1516]        :                                       ;1 SEC0ND INTERVAL
+[1517]    0F3D: B9 0F 00                              MOV CX, 0FH
+[1518]    0F40: BA 40 42                              MOV DX, 4240H
+[1519]    0F43: B4 86                                 MOV AH, 86H
+[1520]    0F45: CD 15                                 INT 15H
+[1521]    0F47: E4 7D                                 IN AL, 125
+[1522]    0F49: 3C 28                                 CMP AL, 40
+[1523]    0F4B: 7D E4                                 JGE STILLHIGH
+[1524]    0F4D: BA 70 20                              MOV DX, 2070H
+[1525]    0F50: B0 00                                 MOV AL, 00000000B
+[1526]    0F52: EE                                    OUT DX, AL
+[1527]    0F53: BA 40 20                              MOV DX, 2040H
+[1528]    0F56: BE 00 00                              MOV SI, 0
+[1529]    0F59: B9 30 00                              MOV CX, 48
+[1530]    0F5C:                                       NEXTH2:
+[1531]    0F5C: 8A 84 96 0F                           MOV AL, MESSAGE2[SI]
+[1532]    0F60: EE                                    OUT DX, AL
+[1533]    0F61: 46                                    INC SI
+[1534]    0F62: 42                                    INC DX
+[1535]    0F63: E2 F7                                 LOOP NEXTH2
+[1536]    0F65:                                       START2:
+[1537]    0F65: C3                                    RET
+[1538]        :                                       CHECKTEMP ENDP
+[1539]        :                                       
+[1540]        :                                       
+[1541]        :                                       ;|              ||              ||              |
+[1542]    0F66: 2A 2A 2A 2A 2A 2A 47 4F 4F 44 2A 2A   MESSAGE1 DB "******GOOD***********MORNING********************"
+                2A 2A 2A 2A 2A 2A 2A 2A 2A 4D 4F 52 
+                4E 49 4E 47 2A 2A 2A 2A 2A 2A 2A 2A 
+                2A 2A 2A 2A 2A 2A 2A 2A 2A 2A 2A 2A 
+                                                    
+[1543]    0F96: 2A 2A 2A 2A 2A 2A 47 4F 4F 44 2A 2A   MESSAGE2 DB "******GOOD**********AFTERNOON*******************"
+                2A 2A 2A 2A 2A 2A 2A 2A 41 46 54 45 
+                52 4E 4F 4F 4E 2A 2A 2A 2A 2A 2A 2A 
+                2A 2A 2A 2A 2A 2A 2A 2A 2A 2A 2A 2A 
+                                                    
+[1544]    0FC6: 2A 2A 2A 2A 2A 2A 47 4F 4F 44 2A 2A   MESSAGE3 DB "******GOOD***********EVENING********************"
+                2A 2A 2A 2A 2A 2A 2A 2A 2A 45 56 45 
+                4E 49 4E 47 2A 2A 2A 2A 2A 2A 2A 2A 
+                2A 2A 2A 2A 2A 2A 2A 2A 2A 2A 2A 2A 
+                                                    
+[1545]    0FF6: 2A 2A 2A 2A 2A 2A 2A 2A 2A 2A 2A 2A   MESSAGEn DB "********************WATERING******PLEASE WAIT***"
+                2A 2A 2A 2A 2A 2A 2A 2A 57 41 54 45 
+                52 49 4E 47 2A 2A 2A 2A 2A 2A 50 4C 
+                45 41 53 45 20 57 41 49 54 2A 2A 2A 
+                                                    
+[1546]    1026: 2A 2A 2A 2A 54 4F 4F 20 48 4F 54 21   MESSAGEh DB "****TOO HOT!********WATERING******PLEASE WAIT***"
+                2A 2A 2A 2A 2A 2A 2A 2A 57 41 54 45 
+                52 49 4E 47 2A 2A 2A 2A 2A 2A 50 4C 
+                45 41 53 45 20 57 41 49 54 2A 2A 2A 
+                                                    
+[1547]        :                                       ;MESSAGEs DB "************************************************"
+[1548]    1056: 00 24                                 BUFF DB ?,"$"
+[1549]    1058: 00 24                                 REPEAT DB ?,"$"
+[1550]    105A: 00 24                                 ISWATERED DB ?,"$"
+[1551]        :                                       
+[1552]        :                                       
+[1553]        :                                       ;0-9 DIGITS DOT MATRIX
+[1554]    105C: 3E 41 41 41 3E                        DOTS0 DB 00111110b, 01000001b, 01000001b, 01000001b, 00111110b,
+[1555]    1061: 44 42 7F 40 40                        DOTS1 DB 01000100b, 01000010b, 01111111b, 01000000b, 01000000b,
+[1556]    1066: 66 51 51 51 4E                        DOTS2 DB 01100110b, 01010001b, 01010001b, 01010001b, 01001110b,
+[1557]    106B: 22 41 49 49 36                        DOTS3 DB 00100010b, 01000001b, 01001001b, 01001001b, 00110110b,
+[1558]    1070: 08 0C 0A 09 7F                        DOTS4 DB 00001000b, 00001100b, 00001010b, 00001001b, 01111111b,
+[1559]    1075: 4F 49 49 49 31                        DOTS5 DB 01001111b, 01001001b, 01001001b, 01001001b, 00110001b,
+[1560]    107A: 3E 49 49 49 32                        DOTS6 DB 00111110b, 01001001b, 01001001b, 01001001b, 00110010b,
+[1561]    107F: 03 01 71 09 07                        DOTS7 DB 00000011b, 00000001b, 01110001b, 00001001b, 00000111b,
+[1562]    1084: 36 49 49 49 36                        DOTS8 DB 00110110b, 01001001b, 01001001b, 01001001b, 00110110b,
+[1563]    1089: 26 49 49 49 3E                        DOTS9 DB 00100110b, 01001001b, 01001001b, 01001001b, 00111110b,
+[1564]    108E: 08 08 08 08 08                        DOTSn DB 00001000b, 00001000b, 00001000b, 00001000b, 00001000b
+[1565]        :                                       
+[1566]        :                                       ;0-9 DIGITS SEVEN SEGMENT
+[1567]    1093: 3F                                    LINE0 DB 00111111b,
+[1568]    1094: 06                                    LINE1 DB 00000110b,
+[1569]    1095: 5B                                    LINE2 DB 01011011b,
+[1570]    1096: 4F                                    LINE3 DB 01001111b,
+[1571]    1097: 66                                    LINE4 DB 01100110b,
+[1572]    1098: 6D                                    LINE5 DB 01101101b,
+[1573]    1099: 7D                                    LINE6 DB 01111101b,
+[1574]    109A: 07                                    LINE7 DB 00000111b,
+[1575]    109B: 7F                                    LINE8 DB 01111111b,
+[1576]    109C: 6F                                    LINE9 DB 01101111b,
+[1577]    109D: 80                                    LINEn DB 10000000b
+[1578]        :                                       
+[1579]        :                                       ;LOGS
+[1580]    109E: 00                                    DAY DB ?, ""
+[1581]    109F: 00                                    DAY1 DB ?, ""
+[1582]    10A0: 00                                    DAY1_END DB 0
+[1583]    10A1: 00                                    DAY2 DB ?, ""
+[1584]    10A2: 00                                    DAY2_END DB 0
+[1585]    10A3: 00                                    MONTH DB ?, ""
+[1586]    10A4: 00                                    MONTH1 DB ?, ""
+[1587]    10A5: 00                                    MONTH1_END DB 0
+[1588]    10A6: 00                                    MONTH2 DB ?, ""
+[1589]    10A7: 00                                    MONTH2_END DB 0
+[1590]    10A8: 00                                    YEAR DB ?, ""
+[1591]    10A9: 00                                    YEAR1 DB ?, ""
+[1592]    10AA: 00                                    YEAR1_END DB 0
+[1593]    10AB: 00                                    YEAR2 DB ?, ""
+[1594]    10AC: 00                                    YEAR2_END DB 0
+[1595]    10AD: 2F                                    DDATE DB "/"
+[1596]    10AE: 00                                    DDATE_END DB 0
+[1597]    10AF: 20 20 20 20 20                        SSPACE DB "     "
+[1598]    10B4: 00                                    SSPACE_END DB 0
+[1599]    10B5: 00                                    HOUR DB ?, ""
+[1600]    10B6: 00                                    HOUR1 DB ?, ""
+[1601]    10B7: 00                                    HOUR1_END DB 0
+[1602]    10B8: 00                                    HOUR2 DB ?, ""
+[1603]    10B9: 00                                    HOUR2_END DB 0
+[1604]    10BA: 00                                    MINUTE DB ?, ""
+[1605]    10BB: 00                                    MINUTE1 DB ?, ""
+[1606]    10BC: 00                                    MINUTE1_END DB 0
+[1607]    10BD: 00                                    MINUTE2 DB ?, ""
+[1608]    10BE: 00                                    MINUTE2_END DB 0
+[1609]    10BF: 00                                    SECOND DB ?, ""
+[1610]    10C0: 00                                    SECOND1 DB ?, ""
+[1611]    10C1: 00                                    SECOND1_END DB 0
+[1612]    10C2: 00                                    SECOND2 DB ?, ""
+[1613]    10C3: 00                                    SECOND2_END DB 0
+[1614]    10C4: 3A                                    TTIME DB ":"
+[1615]    10C5: 00                                    TTIME_END DB 0
+[1616]    10C6: 57 41 54 45 52 45 44 2E 0A 0D         SSTATUS DB "WATERED.", 0Ah, 0Dh
+[1617]    10D0: 00                                    SSTATUS_END DB 0
+[1618]        :                                       
+[1619]    10D1: 63 3A 5C 57 41 54 45 52 49 4E 47 20   DIR DB "c:\WATERING SYSTEM", 0
+                53 59 53 54 45 4D 00                
+[1620]    10E4: 63 3A 5C 57 41 54 45 52 49 4E 47 20   FILE DB "c:\WATERING SYSTEM\LOGS.txt", 0
+                53 59 53 54 45 4D 5C 4C 4F 47 53 2E 
+                74 78 74 00                         
+[1621]    1100: 00 00                                 HANDLE DW ?
+[1622]        :                                       
+ 
+===================================================================================================
+ 
+EXE HEADER - bytes from 0000 to 01FF inclusive.
+
+0000: 4D      -   exe signature (M)
+0001: 5A      -   exe signature (Z)
+0002: 02      -   bytes on last page (l.byte)
+0003: 00      -   bytes on last page (h.byte)
+0004: 0A      -   512 byte pages in file (l.byte)
+0005: 00      -   512 byte pages in file (h.byte)
+0006: 00      -   relocations (l.byte)
+0007: 00      -   relocations (h.byte)
+0008: 20      -   paragraphs in header (l.byte)
+0009: 00      -   paragraphs in header (h.byte)
+000A: 00      -   minimum memory (l.byte)
+000B: 00      -   minimum memory (h.byte)
+000C: FF      -   maximum memory (l.byte)
+000D: FF      -   maximum memory (h.byte)
+000E: 00      -   SS - stack segment (l.byte)
+000F: 00      -   SS - stack segment (h.byte)
+0010: 00      -   SP - stack pointer (l.byte)
+0011: 00      -   SP - stack pointer (h.byte)
+0012: FF      -   check sum (l.byte)
+0013: AC      -   check sum (h.byte)
+0014: 00      -   IP - instruction pointer (l.byte)
+0015: 00      -   IP - instruction pointer (h.byte)
+0016: 00      -   CS - code segment (l.byte)
+0017: 00      -   CS - code segment (h.byte)
+0018: 1E      -   relocation table adress (l.byte)
+0019: 00      -   relocation table adress (h.byte)
+001A: 00      -   overlay number (l.byte)
+001B: 00      -   overlay number (h.byte)
+001C: 01      -   signature (l.byte)
+001D: 00      -   signature (h.byte)
+001E to 01FF  -   reserved relocation area  (00) 
+
+
+
+
+===================================================================================================
