@@ -1,7 +1,7 @@
 ![watering system banner](https://user-images.githubusercontent.com/101156843/235097273-10f4aa9e-5f7b-4454-8429-3e5ab2a00018.png)
 
 > # **Automatic Watering System in Assembly using EMU 8086 & Emulation Kit**
-> 2nd Year - 1st Sem Project 1 in Computer Architecture and Organization [BSCS-2CD-M]
+> 2nd Year - 1st Sem Project 1 in Computer Architecture and Organization [BSCS-2CD-M | Team B]
 
 ## How to run
 - Install EMU 8086
